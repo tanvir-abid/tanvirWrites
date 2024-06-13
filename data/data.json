@@ -1,0 +1,409 @@
+{
+  "features": [
+    {
+      "feature": "Expert Writers",
+      "description": [
+        "Highly qualified and experienced writers with advanced degrees (Master's, PhD) in various fields.",
+        "Expertise in academic writing and research methodologies."
+      ]
+    },
+    {
+      "feature": "Custom Thesis Writing",
+      "description": [
+        "Tailored writing services to meet individual requirements and guidelines.",
+        "Assistance with specific chapters or the entire thesis."
+      ]
+    },
+    {
+      "feature": "Research Assistance",
+      "description": [
+        "Help with identifying research topics and formulating research questions.",
+        "Support in conducting literature reviews, data collection, and analysis."
+      ]
+    },
+    {
+      "feature": "Editing and Proofreading",
+      "description": [
+        "Thorough editing to improve clarity, coherence, and academic tone.",
+        "Proofreading to eliminate grammatical errors, typos, and formatting issues."
+      ]
+    },
+    {
+      "feature": "Plagiarism-Free Content",
+      "description": [
+        "Original writing with proper citations and references.",
+        "Plagiarism checks using advanced software to ensure authenticity."
+      ]
+    },
+    {
+      "feature": "Formatting and Style",
+      "description": [
+        "Adherence to required academic formatting styles (APA, MLA, Chicago, etc.).",
+        "Proper structuring of the thesis with attention to details like tables, figures, and appendices."
+      ]
+    },
+    {
+      "feature": "Timely Delivery",
+      "description": [
+        "Meeting deadlines with a focus on delivering quality work within the agreed timeframe.",
+        "Regular updates and progress reports."
+      ]
+    },
+    {
+      "feature": "Confidentiality",
+      "description": [
+        "Secure handling of personal and academic information.",
+        "Commitment to maintaining client privacy and confidentiality."
+      ]
+    },
+    {
+      "feature": "Revisions and Feedback",
+      "description": [
+        "Free revisions based on client feedback to ensure satisfaction.",
+        "Open communication channels for discussing changes and improvements."
+      ]
+    },
+    {
+      "feature": "Support Services",
+      "description": [
+        "24/7 customer support for queries and assistance.",
+        "Consultation services to guide students through the thesis writing process."
+      ]
+    },
+    {
+      "feature": "Sample Papers and Templates",
+      "description": [
+        "Access to sample theses and templates for reference.",
+        "Guidance on structuring and organizing the thesis."
+      ]
+    },
+    {
+      "feature": "Workshops and Tutorials",
+      "description": [
+        "Online workshops and tutorials on thesis writing and research skills.",
+        "Resources for improving academic writing proficiency."
+      ]
+    },
+    {
+      "feature": "Bibliography and Citation Assistance",
+      "description": [
+        "Help with compiling bibliographies and reference lists.",
+        "Correct and consistent citation of sources."
+      ]
+    }
+  ],
+  
+  "testimony": [
+    {
+      "client": "John Doe",
+      "client_img": "",
+      "comment": "Excellent service and very professional! The team went above and beyond to ensure all my needs were met. I couldn't be happier with the results and will definitely be recommending them to my friends and family.",
+      "rating": 5,
+      "gender": "male"
+    },
+    {
+      "client": "Jane Smith",
+      "client_img": "",
+      "comment": "Great experience, will definitely recommend! From the initial consultation to the final delivery, everything was handled with utmost care and attention to detail. I am very pleased with the outcome.",
+      "rating": 4,
+      "gender": "female"
+    },
+    {
+      "client": "Alice Johnson",
+      "client_img": "",
+      "comment": "Good value for the price. The service provided was solid, and the team was responsive to my needs. There are a few areas for improvement, but overall, I am satisfied with the service.",
+      "rating": 4,
+      "gender": "female"
+    },
+    {
+      "client": "Bob Brown",
+      "client_img": "",
+      "comment": "Average service, room for improvement. The experience was okay, but I expected more based on the reviews I had read. The team was friendly, but the execution could have been better.",
+      "rating": 3,
+      "gender": "male"
+    },
+    {
+      "client": "Cathy White",
+      "client_img": "",
+      "comment": "Not satisfied with the service. There were several issues that were not addressed, and the overall experience did not meet my expectations. I hope they can improve in the future.",
+      "rating": 2,
+      "gender": "female"
+    }
+  ],  
+
+  "services": [
+    {
+      "service_name": "Thesis Writing",
+      "tagline": "Get to know about the services.",
+      "thumbnail": "<i class='fa-solid fa-book-open-reader'></i>",
+      "price_tables": [
+        {
+          "package_name": "Basic",
+          "ID": "thesis001",
+          "serviceName": "Thesis Writing",
+          "plan_category": "basic",
+          "slogan": "Introduction, Literature Review & Methodology",
+          "price": "৳3,000",
+          "package_details": [
+            "Introduction, Literature Review, and Methodology",
+            "Grammatical Error-Free",
+            "Plagiarism-Free",
+            "Proper Citations and References",
+            "Formatted According to Guidelines",
+            "1 Revision Included",
+            "Preliminary Abstract",
+            "Initial Thesis Statement",
+            "Outline Provided",
+            "Initial Research Consultation",
+            "In-text Citations",
+            "Reference List Formatting",
+            "Assistance with Topic Selection",
+            "Guidance on Research Questions Development"
+          ]
+        },
+        {
+          "package_name": "Data Analysis",
+          "ID": "thesis002",
+          "serviceName": "Thesis Writing",
+          "plan_category": "standard",
+          "slogan": "Thorough Data Analysis & Interpretation",
+          "price": "৳3,000",
+          "package_details": [
+            "Data Analysis Section",
+            "Statistical Analysis (if applicable)",
+            "Graphs and Tables",
+            "Grammatical Error-Free",
+            "Plagiarism-Free",
+            "1 Revision Included",
+            "Data Cleaning and Preparation",
+            "Descriptive and Inferential Statistics",
+            "Interpretation of Statistical Results",
+            "Consultation on Data Collection Methods",
+            "Software and Tool Recommendations for Analysis",
+            "Assistance with Data Visualization",
+            "Interpretation Guidance for Complex Results",
+            "Data Quality Check"
+          ]
+        },
+        {
+          "package_name": "Result and Discussion",
+          "ID": "thesis003",
+          "serviceName": "Thesis Writing",
+          "plan_category": "ultimate",
+          "slogan": "In-depth Analysis & Discussion",
+          "price": "৳4,000",
+          "package_details": [
+            "Result and Discussion Section",
+            "Data Interpretation",
+            "Graphs and Tables",
+            "Grammatical Error-Free",
+            "Plagiarism-Free",
+            "Proper Citations and References",
+            "1 Revision Included",
+            "Linking Results to Research Questions",
+            "Comparison with Existing Literature",
+            "Recommendations for Future Research",
+            "Consultation on Presentation of Results",
+            "Critical Analysis of Findings",
+            "Explanation of Unexpected Results",
+            "Strengths and Limitations Discussion",
+            "Theory Application to Findings"
+          ]
+        },
+        {
+          "package_name": "Full Thesis",
+          "ID": "thesis004",
+          "serviceName": "Thesis Writing",
+          "plan_category": "ultimate",
+          "slogan": "Comprehensive Thesis Writing Service",
+          "price": "৳12,000",
+          "package_details": [
+            "Complete Thesis Writing (All Sections)",
+            "Introduction, Literature Review, Methodology, Data Analysis, Result and Discussion, Conclusion",
+            "Grammatical Error-Free",
+            "Plagiarism-Free",
+            "Proper Citations and References",
+            "Formatted According to Guidelines",
+            "Up to 3 Revisions Included",
+            "Comprehensive Abstract",
+            "Detailed Thesis Statement",
+            "Full Outline Provided",
+            "Continuous Research Consultations",
+            "Appendices (if applicable)",
+            "Executive Summary",
+            "Assistance with Defense Preparation",
+            "Literature Search Strategy Development",
+            "Citation Management Assistance",
+            "Peer-Reviewed Journal Suggestions for Publication",
+            "Integration of Feedback from Supervisors or Committee",
+            "Research Proposal Writing Assistance"
+          ]
+        }
+      ]
+      
+
+    },
+
+    {
+      "service_name": "Content Writing Service",
+      "tagline": "Professional Content for All Your Needs",
+      "thumbnail": "<i class='fa-regular fa-file-lines'></i>",
+      "price_tables": [
+        {
+          "package_name": "Basic Start",
+          "ID": "content001",
+          "serviceName": "Content Writing",
+          "plan_category": "basic",
+          "slogan": "Perfect for Getting Started",
+          "price": "৳5000",
+          "package_details": [
+            "Up to 2,000 words",
+            "SEO optimized",
+            "2 revisions",
+            "Delivery within 5 days",
+            "One topic focus",
+            "Basic keyword integration",
+            "Grammar check",
+            "Basic formatting",
+            "Email support",
+            "Title and meta description",
+            "Basic competitor analysis",
+            "Stock images integration"
+          ]
+        },
+        {
+          "package_name": "Standard Growth",
+          "ID": "content002",
+          "serviceName": "Content Writing",
+          "plan_category": "standard",
+          "slogan": "For Growing Businesses",
+          "price": "৳10000",
+          "package_details": [
+            "Up to 5,000 words",
+            "SEO optimized",
+            "3 revisions",
+            "Delivery within 7 days",
+            "Up to 3 topic focuses",
+            "Keyword research included",
+            "Grammar and readability check",
+            "Advanced formatting",
+            "Email and chat support",
+            "Basic image sourcing",
+            "Title and meta description",
+            "Basic competitor analysis",
+            "Internal linking suggestions",
+            "Content promotion tips"
+          ]
+        },
+        {
+          "package_name": "Professional Pro",
+          "ID": "content003",
+          "serviceName": "Content Writing",
+          "plan_category": "standard",
+          "slogan": "For Professionals",
+          "price": "৳20000",
+          "package_details": [
+            "Up to 10,000 words",
+            "SEO optimized",
+            "5 revisions",
+            "Delivery within 10 days",
+            "Up to 5 topic focuses",
+            "Keyword research included",
+            "Grammar, readability, and style check",
+            "Professional formatting",
+            "Email, chat, and phone support",
+            "High-quality image sourcing",
+            "Internal linking strategy",
+            "Meta descriptions and tags",
+            "Competitor analysis",
+            "Content calendar"
+          ]
+        },
+        {
+          "package_name": "Enterprise Elite",
+          "ID": "content004",
+          "serviceName": "Content Writing",
+          "plan_category": "ultimate",
+          "slogan": "For Large Enterprises",
+          "price": "৳50000",
+          "package_details": [
+            "Up to 20,000 words",
+            "SEO optimized",
+            "Unlimited revisions",
+            "Priority delivery within 7 days",
+            "Unlimited topic focuses",
+            "Keyword research included",
+            "Grammar, readability, style, and tone check",
+            "Premium formatting",
+            "24/7 dedicated support",
+            "Custom graphics and infographics",
+            "Internal linking strategy",
+            "Meta descriptions and tags",
+            "Competitor analysis",
+            "Plagiarism report",
+            "Dedicated account manager",
+            "Monthly content strategy consultation",
+            "Performance analytics and reporting",
+            "Social media post integration",
+            "Email newsletter content",
+            "A/B testing ideas for headlines and CTAs"
+          ]
+        },
+        {
+          "package_name": "Per Article",
+          "ID": "content006",
+          "serviceName": "Content Writing",
+          "plan_category": "standard",
+          "slogan": "Pay Per Article",
+          "price": "৳1200",
+          "package_details": [
+            "Up to 1,000 words per article",
+            "SEO optimized",
+            "2 revisions per article",
+            "Delivery within 3 days per article",
+            "One topic focus per article",
+            "Basic keyword integration",
+            "Grammar check",
+            "Basic formatting",
+            "Email support",
+            "Title and meta description",
+            "Basic competitor analysis",
+            "Stock images integration"
+          ]
+        },
+        {
+          "package_name": "Custom",
+          "ID": "content005",
+          "serviceName": "Content Writing",
+          "plan_category": "ultimate",
+          "slogan": "Tailored to Your Needs",
+          "price": "Variable",
+          "package_details": [
+            "Word count tailored to client's needs",
+            "SEO optimized",
+            "Revisions as per agreement",
+            "Delivery time as per agreement",
+            "Topic focuses as per agreement",
+            "Keyword research included",
+            "Grammar, readability, style, and tone check",
+            "Custom formatting",
+            "24/7 dedicated support",
+            "Custom graphics and infographics",
+            "Internal linking strategy",
+            "Meta descriptions and tags",
+            "Competitor analysis",
+            "Plagiarism report",
+            "Dedicated account manager",
+            "Custom content strategy consultation",
+            "Performance analytics and reporting",
+            "Social media post integration",
+            "Email newsletter content",
+            "A/B testing ideas for headlines and CTAs",
+            "Custom add-ons as per client's needs"
+          ]
+        }
+      ]
+    }
+
+  ]
+}
