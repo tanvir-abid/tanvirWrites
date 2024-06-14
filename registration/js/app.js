@@ -17,8 +17,7 @@ const db = getFirestore(app);
 //=================================================//
 
 async function fetchData() {
-    const origin = window.location.origin;
-    const response = await fetch(`${origin}/data/data.json`);
+    const response = await fetch('https://tanvir-abid.github.io/tanvirWrites/data/data.json');
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
