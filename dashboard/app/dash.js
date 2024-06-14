@@ -1031,7 +1031,7 @@ async function displaySetting() {
             deleteButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             try {
                 await deleteDoc(doc(db, "Coupons", coupon.id));
-                alert('Coupon deleted.');
+                createModal('Coupon deleted.');
                 deleteButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
             } catch (err) {
                 console.log(err);
@@ -1050,13 +1050,43 @@ async function displaySetting() {
     const unusedUl = document.createElement('ul');
 
     // Add each coupon to the appropriate ul list
-    coupons.forEach(coupon => {
-        if (coupon.isUsed) {
-            usedUl.appendChild(createCouponListItem(coupon));
-        } else {
-            unusedUl.appendChild(createCouponListItem(coupon));
+    if (coupons.length > 0) {
+        let usedCouponsCount = 0;
+        let unusedCouponsCount = 0;
+    
+        coupons.forEach(coupon => {
+            if (coupon.isUsed) {
+                usedUl.appendChild(createCouponListItem(coupon));
+                usedCouponsCount++;
+            } else {
+                unusedUl.appendChild(createCouponListItem(coupon));
+                unusedCouponsCount++;
+            }
+        });
+    
+        if (usedCouponsCount === 0) {
+            const li = document.createElement('li');
+            li.textContent = 'No Used Coupons';
+            usedUl.appendChild(li);
         }
-    });
+    
+        if (unusedCouponsCount === 0) {
+            const li = document.createElement('li');
+            li.textContent = 'No Unused Coupons';
+            unusedUl.appendChild(li);
+        }
+    
+    }else {
+    
+        const liUsed = document.createElement('li');
+        liUsed.textContent = 'No Used Coupons';
+        usedUl.appendChild(liUsed);
+    
+        const liUnused = document.createElement('li');
+        liUnused.textContent = 'No Unused Coupons';
+        unusedUl.appendChild(liUnused);
+    }
+    
 
     // Create titles and append lists to their respective containers
     const usedTitle = document.createElement('h2');
@@ -1149,7 +1179,11 @@ async function displaySetting() {
             createModal('Something went wrong.');
             submitButton.innerHTML = 'Add Coupon';
         }
-
+        // Check if 'No Unused Coupons' exists and remove it
+        const unusedListItems = unusedUl.getElementsByTagName('li');
+        if (unusedListItems.length === 1 && unusedListItems[0].textContent === 'No Unused Coupons') {
+            unusedUl.removeChild(unusedListItems[0]);
+        }
         unusedUl.appendChild(createCouponListItem(newCoupon));
 
         // Reset form fields
