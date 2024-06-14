@@ -87,6 +87,9 @@ ul#menu-list {
         padding: 10px;
         background-color: rgb(255, 32, 78);
         cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 /*====================*/
