@@ -984,11 +984,15 @@ async function displaySetting() {
 
     // Create coupon-container
     const couponContainer = document.createElement('div');
-    couponContainer.className = 'coupon-container';
+    couponContainer.className = 'coupons-container';
 
-    // Create existing-coupons-container
-    const existingCouponsContainer = document.createElement('div');
-    existingCouponsContainer.className = 'existing-coupons-container';
+    // Create used-coupons-container
+    const usedCouponsContainer = document.createElement('div');
+    usedCouponsContainer.className = 'used-coupons-container coupon-container';
+
+    // Create unused-coupons-container
+    const unusedCouponsContainer = document.createElement('div');
+    unusedCouponsContainer.className = 'unused-coupons-container coupon-container';
 
     // Create addNew-container
     const addNewContainer = document.createElement('div');
@@ -1003,17 +1007,10 @@ async function displaySetting() {
 
     hideLoadingSpinner();
 
-    const couponTitle = document.createElement('h2');
-    couponTitle.textContent = "Add Listed Coupons";
-    existingCouponsContainer.appendChild(couponTitle);
-
-    // Create the ul element for existing coupons
-    const ul = document.createElement('ul');
-
     // Helper function to create a coupon list item
     function createCouponListItem(coupon) {
         const li = document.createElement('li');
-        li.textContent = `Coupon ID: ${coupon.id}, Value: ${coupon.category === 'amount' ? '৳ ' + coupon.value : coupon.value + '%'}`;
+        li.innerHTML = `<span>Coupon ID: ${coupon.id}, Value: ${coupon.category === 'amount' ? '৳ ' + coupon.value : coupon.value + '%'}</span>`;
         const buttonContainer = document.createElement('div');
         // Add copy button
         const copyButton = document.createElement('button');
@@ -1021,7 +1018,7 @@ async function displaySetting() {
         copyButton.onclick = (event) => {
             event.stopPropagation(); // Prevent li click event
             navigator.clipboard.writeText(coupon.id).then(() => {
-                alert(`Coupon ID ${coupon.id} copied to clipboard!`);
+                createModal(`Coupon ID ${coupon.id} copied to clipboard!`);
             }).catch(err => {
                 console.error('Failed to copy: ', err);
             });
@@ -1032,15 +1029,15 @@ async function displaySetting() {
         deleteButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
         deleteButton.onclick = async () => {
             deleteButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-            try{
+            try {
                 await deleteDoc(doc(db, "Coupons", coupon.id));
-                alert('New coupon added.');
+                alert('Coupon deleted.');
                 deleteButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-            }catch(err){
+            } catch (err) {
                 console.log(err);
                 deleteButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
             }
-            ul.removeChild(li);
+            li.remove();
         };
 
         buttonContainer.appendChild(deleteButton);
@@ -1048,18 +1045,33 @@ async function displaySetting() {
         return li;
     }
 
-    // Add each coupon to the ul list
-    if(coupons.length > 0){
-        coupons.forEach(coupon => {
-            ul.appendChild(createCouponListItem(coupon));
-        });
-    }else{
-        const li = document.createElement('li');
-        li.textContent = "No coupns available.";
-        ul.appendChild(li);
-    }
+    // Create the ul elements for used and unused coupons
+    const usedUl = document.createElement('ul');
+    const unusedUl = document.createElement('ul');
 
-    existingCouponsContainer.appendChild(ul);
+    // Add each coupon to the appropriate ul list
+    coupons.forEach(coupon => {
+        if (coupon.isUsed) {
+            usedUl.appendChild(createCouponListItem(coupon));
+        } else {
+            unusedUl.appendChild(createCouponListItem(coupon));
+        }
+    });
+
+    // Create titles and append lists to their respective containers
+    const usedTitle = document.createElement('h2');
+    usedTitle.textContent = "Used Coupons";
+    usedCouponsContainer.appendChild(usedTitle);
+    usedCouponsContainer.appendChild(usedUl);
+
+    const unusedTitle = document.createElement('h2');
+    unusedTitle.textContent = "Unused Coupons";
+    unusedCouponsContainer.appendChild(unusedTitle);
+    unusedCouponsContainer.appendChild(unusedUl);
+
+    // Append both used and unused coupons containers
+    couponContainer.appendChild(usedCouponsContainer);
+    couponContainer.appendChild(unusedCouponsContainer);
 
     // Create the form for adding new coupons
     const formTitle = document.createElement('h2');
@@ -1099,10 +1111,22 @@ async function displaySetting() {
     form.appendChild(valueInput);
 
     // Submit button
+    const btnContainer = document.createElement('div');
+    btnContainer.className = 'btn-container';
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.innerHTML = 'Add Coupon';
-    form.appendChild(submitButton);
+    btnContainer.appendChild(submitButton);
+
+    const generateIDBtn = document.createElement('button');
+    generateIDBtn.type = 'button';
+    generateIDBtn.textContent = 'Generate ID';
+    btnContainer.appendChild(generateIDBtn);
+    form.appendChild(btnContainer);
+
+    generateIDBtn.addEventListener('click', () => {
+        idInput.value = generateReadableUniqueID();
+    });
 
     // Form submit event
     form.onsubmit = async (event) => {
@@ -1112,18 +1136,21 @@ async function displaySetting() {
         const newCoupon = {
             id: idInput.value,
             category: categorySelect.value,
-            value: parseInt(valueInput.value)
+            value: parseInt(valueInput.value),
+            isUsed: false
         };
 
-        try{
+        try {
             await setDoc(doc(db, "Coupons", newCoupon.id), newCoupon);
-            alert('New coupon added.');
+            createModal('New coupon added.');
             submitButton.innerHTML = 'Add Coupon';
-        }catch(err){
+        } catch (err) {
             console.log(err);
+            createModal('Something went wrong.');
             submitButton.innerHTML = 'Add Coupon';
         }
-        ul.appendChild(createCouponListItem(newCoupon));
+
+        unusedUl.appendChild(createCouponListItem(newCoupon));
 
         // Reset form fields
         idInput.value = '';
@@ -1134,11 +1161,35 @@ async function displaySetting() {
     addNewContainer.appendChild(form);
 
     // Append containers
-    couponContainer.appendChild(existingCouponsContainer);
     couponContainer.appendChild(addNewContainer);
     settingContainer.appendChild(couponContainer);
     mainContainer.appendChild(settingContainer);
 }
+
+// Function to generate a readable and unique coupon code
+function generateReadableUniqueID() {
+    const adjectives = [
+        'Insightful', 'Brilliant', 'Thorough', 'Creative', 'Detailed', 
+        'Comprehensive', 'Innovative', 'Critical', 'Analytical', 'Meticulous',
+        'Thoughtful', 'Perceptive', 'Articulate', 'Eloquent', 'Astute', 
+        'Vivid', 'Profound', 'Lucid', 'Coherent', 'Concise'
+    ];
+    
+    const nouns = [
+        'Writer', 'Researcher', 'Analyst', 'Scholar', 'Author', 
+        'Editor', 'Reviewer', 'Critic', 'Strategist', 'Planner',
+        'Scribe', 'Narrator', 'Essayist', 'Wordsmith', 'Linguist',
+        'Thinker', 'Commentator', 'Storyteller', 'Reporter', 'Historian'
+    ];
+
+    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const uniqueNumber = Date.now().toString(36).toUpperCase().slice(-4);
+    const randomString = Math.random().toString(36).substr(2, 4).toUpperCase();
+
+    return `TANVIR-${adjective}-${noun}-${uniqueNumber}-${randomString}`;
+}
+
 //================================//
 // Function to create and show the loading spinner
 function showLoadingSpinner() {

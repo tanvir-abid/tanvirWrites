@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded',async ()=>{
             main_container.appendChild(formElement);
         } catch (error) {
             console.error('Error parsing package data:', error);
+            createModal("There might be a network issue. Please, check internet connection and reload the page. Thank you.")
         }
     } else {
         const warningMessage = `
@@ -177,10 +178,11 @@ function createForm(plan) {
             // Create the apply button
             const applyButton = document.createElement('button');
             applyButton.type = 'button'; // Changed to 'button' to prevent form submission
-            applyButton.textContent = 'Apply';
+            applyButton.innerHTML = 'Apply';
             couponInputsDiv.appendChild(applyButton);
             // Add click event to the apply button
             applyButton.addEventListener('click',async () => {
+                applyButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
                 const couponCode = couponInput.value;
 
                 const docRef = doc(db, "Coupons", couponCode);
@@ -190,24 +192,35 @@ function createForm(plan) {
                     let priceElm = document.getElementById('price');
                     let couponDetail =  docSnap.data();
 
-                    let newPrice;
-                    if(couponDetail.category === "amount"){
-                        newPrice = plan.price.replace(/[^0-9.-]+/g, '') - couponDetail.value;
+                    if(!couponDetail.isUsed){
+                        let newPrice;
+                        if(couponDetail.category === "amount"){
+                            newPrice = plan.price.replace(/[^0-9.-]+/g, '') - couponDetail.value;
 
+                        }else{
+                            newPrice = plan.price.replace(/[^0-9.-]+/g, '') - (plan.price.replace(/[^0-9.-]+/g, '')*(couponDetail.value/100));
+                        }
+
+                        plan.price = `৳${newPrice}`;
+                        plan.couponCode = couponDetail.id;
+                        priceElm.innerHTML = `<label><i class="fa-solid fa-money-bill-wave"></i> <strong>Price (TK.):  </strong> ৳ ${newPrice}</label>`;
+                        
+                        couponInputsDiv.innerHTML = "Code applied successfully.";
+
+                        const couponDocRef = doc(db, "Coupons", couponDetail.id);
+                        await updateDoc(couponDocRef, {
+                            isUsed: true
+                        });
+                        setTimeout(() => {
+                            couponInputsDiv.remove();
+                        }, 2000);
                     }else{
-                        newPrice = plan.price.replace(/[^0-9.-]+/g, '') - (plan.price.replace(/[^0-9.-]+/g, '')*(couponDetail.value/100));
+                        createModal("Sorry, This coupon has already been used.");
+                        applyButton.innerHTML = 'Apply';
                     }
-
-                    plan.price = `৳${newPrice}`;
-                    plan.couponCode = couponDetail.id;
-                    priceElm.innerHTML = `<label><i class="fa-solid fa-money-bill-wave"></i> <strong>Price (TK.):  </strong> ৳ ${newPrice}</label>`;
-                    
-                    couponInputsDiv.innerHTML = "Code applied successfully.";
-                    setTimeout(() => {
-                        couponInputsDiv.remove();
-                    }, 2000);
                 } else {
-                    createModal("No Coupon Code Found")
+                    createModal("No Coupon Code Found");
+                    applyButton.innerHTML = 'Apply';
                 }
                 //console.log(`Coupon code: ${couponCode}, ${plan.price.replace(/[^0-9.-]+/g, '')}`);
                 
