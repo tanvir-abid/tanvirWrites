@@ -17,7 +17,8 @@ const db = getFirestore(app);
 //=================================================//
 
 async function fetchData() {
-    const response = await fetch('/data/data.json');
+    const origin = window.location.origin;
+    const response = await fetch(`${origin}/data/data.json`);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
