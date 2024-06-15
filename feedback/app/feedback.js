@@ -78,11 +78,11 @@ document.addEventListener("DOMContentLoaded", function() {
     
     form_container.appendChild(form_header)
     // Create form element
-    var form = document.createElement("form");
+    let form = document.createElement("form");
     form.id = "feedback-form";
 
     // Define input groups
-    var inputGroups = [
+    let inputGroups = [
         { label: "Name", type: "text", name: "name", required: true, icon:'<i class="fa-regular fa-user"></i>' },
         { label: "Email", type: "email", name: "email", required: true, icon: '<i class="fa-regular fa-envelope"></i>' },
         { label: "Institute", type: "text", name: "institute", required: true, icon:'<i class="fa-solid fa-building-columns"></i>' },
@@ -90,166 +90,184 @@ document.addEventListener("DOMContentLoaded", function() {
         { label: "Comment", type: "textarea", name: "comment", required: true, icon:'<i class="fa-regular fa-comment-dots"></i>' }
     ];
 
-// Variable to store user rating
-let userRating = 0;
+    // Variable to store user rating
+    let userRating = 0;
 
-// Create input groups
-inputGroups.forEach(function(inputGroup) {
-    var groupDiv = document.createElement("div");
-    groupDiv.classList.add("input-group","inputs");
+    // Create input groups
+    inputGroups.forEach(function(inputGroup) {
+        let groupDiv = document.createElement("div");
+        groupDiv.classList.add("input-group","inputs");
 
-    var label = document.createElement("label");
-    label.innerHTML = `${inputGroup.icon} ${inputGroup.label}`;
-    groupDiv.appendChild(label);
+        let label = document.createElement("label");
+        label.innerHTML = `<span>${inputGroup.icon} ${inputGroup.label}</span>`;
+        groupDiv.appendChild(label);
 
-    if(inputGroup.label === 'Name' || inputGroup.label === 'Email' || inputGroup.label === 'Institute'){
-        label.className = `${inputGroup.label.toLowerCase()}-label`;
-    }
-    
-    var input;
-    if(inputGroup.type === 'textarea'){
-        input = document.createElement("textarea");
-        input.name = inputGroup.name;
-        groupDiv.classList.add("comment");
-        input.required = true;
-        label.className = `${inputGroup.label.toLowerCase()}-label`;
-    }else if (inputGroup.type === 'select') {
-        input = document.createElement("select");
-        input.name = inputGroup.name;
-        input.required = true;
-        // Create options for select
-        inputGroup.options.forEach(function(optionValue) {
-            var option = document.createElement("option");
-            option.text = optionValue;
-            input.appendChild(option);
-        });
-    } else {
-        input = document.createElement("input");
-        input.type = inputGroup.type;
-        input.name = inputGroup.name;
-        if (inputGroup.required) {
+        if(inputGroup.label === 'Name' || inputGroup.label === 'Email' || inputGroup.label === 'Institute'){
+            label.className = `${inputGroup.label.toLowerCase()}-label`;
+        }
+        
+        let input;
+        if(inputGroup.type === 'textarea'){
+            input = document.createElement("textarea");
+            input.name = inputGroup.name;
+            groupDiv.classList.add("comment");
             input.required = true;
-        }
-    }
-    groupDiv.appendChild(input);
-
-    // Add focus and blur event listeners
-    input.addEventListener('focus', function() {
-        groupDiv.classList.add('active');
-    });
-    input.addEventListener('blur', function() {
-        groupDiv.classList.remove('active');
-    });
-
-    // Add input event listener to handle 'selected' class
-    input.addEventListener('input', function() {
-        if (input.value !== "") {
-            groupDiv.classList.add('selected');
+            label.className = `${inputGroup.label.toLowerCase()}-label`;
+        }else if (inputGroup.type === 'select') {
+            input = document.createElement("select");
+            input.name = inputGroup.name;
+            input.required = true;
+            // Create options for select
+            inputGroup.options.forEach(function(optionValue) {
+                var option = document.createElement("option");
+                option.text = optionValue;
+                input.appendChild(option);
+            });
         } else {
-            groupDiv.classList.remove('selected');
+            input = document.createElement("input");
+            input.type = inputGroup.type;
+            input.name = inputGroup.name;
+            if (inputGroup.required) {
+                input.required = true;
+            }
         }
+        groupDiv.appendChild(input);
+
+        if (inputGroup.type === 'textarea') {
+            let charCount = document.createElement("span");
+            const maxCharacters = 600;
+            charCount.textContent = `${maxCharacters} Characters`;
+            charCount.classList.add("char-count");
+            label.appendChild(charCount);
+        
+            input.addEventListener("input", () => {
+                const remainingCharacters = maxCharacters - input.value.length;
+                charCount.textContent = `${remainingCharacters} Characters`;
+        
+                if (input.value.length > maxCharacters) {
+                    createModal('You have exceeded the 600 characters limit.');
+                    input.value = input.value.substring(0, maxCharacters);
+                    charCount.textContent = `0 Characters`;
+                }
+            });
+        }
+        
+        
+        // Add focus and blur event listeners
+        input.addEventListener('focus', function() {
+            groupDiv.classList.add('active');
+        });
+        input.addEventListener('blur', function() {
+            groupDiv.classList.remove('active');
+        });
+
+        // Add input event listener to handle 'selected' class
+        input.addEventListener('input', function() {
+            if (input.value !== "") {
+                groupDiv.classList.add('selected');
+            } else {
+                groupDiv.classList.remove('selected');
+            }
+        });
+
+        form.appendChild(groupDiv);
     });
 
-    form.appendChild(groupDiv);
-});
+    // Create rating input group and add to form
+    const ratingInputGroup = createRatingInputGroup("Rating:");
+    form.appendChild(ratingInputGroup);
 
-// Create rating input group and add to form
-const ratingInputGroup = createRatingInputGroup("Rating:");
-form.appendChild(ratingInputGroup);
+    // Create submit button
+    const btnContainer = document.createElement('div');
+    btnContainer.className = 'btn-container';
 
-// Create submit button
-const btnContainer = document.createElement('div');
-btnContainer.className = 'btn-container';
+    const submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.setAttribute('data-text', 'Submit Your Feedback');
+    submitButton.innerHTML = `<span><i class="fa-solid fa-paper-plane"></i> Your Feedback Is Important</span>`;
+    btnContainer.appendChild(submitButton)
+    form.appendChild(btnContainer);
 
-const submitButton = document.createElement("button");
-submitButton.type = "submit";
-submitButton.setAttribute('data-text', 'Submit Your Feedback');
-submitButton.innerHTML = `<span><i class="fa-solid fa-paper-plane"></i> Your Feedback Is Important</span>`;
-btnContainer.appendChild(submitButton)
-form.appendChild(btnContainer);
+    // Append form to main container
+    form_container.appendChild(form);
+    mainContainer.appendChild(form_container);
+    document.querySelector('main').appendChild(mainContainer);
 
-// Append form to main container
-form_container.appendChild(form);
-mainContainer.appendChild(form_container);
-document.querySelector('main').appendChild(mainContainer);
+    // Add event listener for form submission
+    form.addEventListener("submit",async function(event) {
+        event.preventDefault();
+        submitButton.setAttribute('data-text', 'Submitting');
+        submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting';
+        // Collect form data
+        const formData = new FormData(form);
+        const object = Object.fromEntries(formData);
 
-// Add event listener for form submission
-form.addEventListener("submit",async function(event) {
-    event.preventDefault();
-    submitButton.setAttribute('data-text', 'Submitting');
-    submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting';
-    // Collect form data
-    const formData = new FormData(form);
-    const object = Object.fromEntries(formData);
+        // Add user rating to form data object
+        if(userRating !== 0){
+            object.rating = userRating;
+            object.shouldUse = false;
 
-    // Add user rating to form data object
-    if(userRating !== 0){
-        object.rating = userRating;
-        console.log(object);
+            try {
+                // Add a new document with a generated id.
+                const docRef = await addDoc(collection(db, "testimonials"),object);
+                console.log("Document written with ID: ", docRef.id);
 
-          try {
-            // Add a new document with a generated id.
-            const docRef = await addDoc(collection(db, "testimonials"),object);
-            console.log("Document written with ID: ", docRef.id);
-
-            createModal('Thank You for submitting your feedback.', true);
-            submitButton.setAttribute('data-text', 'Submit Your Feedback');
-            submitButton.innerHTML = `<span><i class="fa-solid fa-paper-plane"></i> Your Feedback Is Important</span>`;
-          } catch (e) {
-            console.error("Error adding document: ", e);
+                createModal('Thank You for submitting your feedback.', true);
+                submitButton.setAttribute('data-text', 'Submit Your Feedback');
+                submitButton.innerHTML = `<span><i class="fa-solid fa-paper-plane"></i> Your Feedback Is Important</span>`;
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                createModal('Please, rate the service.');
+                submitButton.setAttribute('data-text', 'Submit Your Feedback');
+                submitButton.innerHTML = `<span><i class="fa-solid fa-paper-plane"></i> Your Feedback Is Important</span>`;
+            }
+            
+        }else{
             createModal('Please, rate the service.');
             submitButton.setAttribute('data-text', 'Submit Your Feedback');
             submitButton.innerHTML = `<span><i class="fa-solid fa-paper-plane"></i> Your Feedback Is Important</span>`;
-          }
-        
-    }else{
-        createModal('Please, rate the service.');
-        submitButton.setAttribute('data-text', 'Submit Your Feedback');
-        submitButton.innerHTML = `<span><i class="fa-solid fa-paper-plane"></i> Your Feedback Is Important</span>`;
-    }
+        }
 
 
-});
+    });
 
-function createRatingInputGroup(labelText) {
-    const groupDiv = document.createElement("div");
-    groupDiv.classList.add("input-group","rating-group");
+    function createRatingInputGroup(labelText) {
+        const groupDiv = document.createElement("div");
+        groupDiv.classList.add("input-group","rating-group");
 
-    const label = document.createElement("label");
-    label.innerHTML = `<i class="fa-brands fa-gratipay"></i> ${labelText}`;
-    groupDiv.appendChild(label);
+        const label = document.createElement("label");
+        label.innerHTML = `<i class="fa-brands fa-gratipay"></i> ${labelText}`;
+        groupDiv.appendChild(label);
 
-    const ratingDiv = document.createElement("div");
-    ratingDiv.classList.add("rating");
+        const ratingDiv = document.createElement("div");
+        ratingDiv.classList.add("rating");
 
-    let stars = [];
-    // Create 5 spans for star icons
-    for (let i = 1; i <= 5; i++) {
-        const starSpan = document.createElement("span");
-        starSpan.innerHTML = '<i class="fa-solid fa-star"></i>'; // Star icon
-        starSpan.dataset.rating = i;
-        stars.push(starSpan);
+        let stars = [];
+        // Create 5 spans for star icons
+        for (let i = 1; i <= 5; i++) {
+            const starSpan = document.createElement("span");
+            starSpan.innerHTML = '<i class="fa-solid fa-star"></i>'; // Star icon
+            starSpan.dataset.rating = i;
+            stars.push(starSpan);
 
-        starSpan.addEventListener("click", function() {
-            const clickedRating = parseInt(this.dataset.rating);
-            userRating = clickedRating;
-            for (let j = 1; j <= 5; j++) {
-                if (j <= clickedRating) {
-                    stars[j - 1].classList.add("selected");
-                } else {
-                    stars[j - 1].classList.remove("selected");
+            starSpan.addEventListener("click", function() {
+                const clickedRating = parseInt(this.dataset.rating);
+                userRating = clickedRating;
+                for (let j = 1; j <= 5; j++) {
+                    if (j <= clickedRating) {
+                        stars[j - 1].classList.add("selected");
+                    } else {
+                        stars[j - 1].classList.remove("selected");
+                    }
                 }
-            }
-            console.log("User rated: " + clickedRating + " stars");
-        });
-        ratingDiv.appendChild(starSpan);
+                console.log("User rated: " + clickedRating + " stars");
+            });
+            ratingDiv.appendChild(starSpan);
+        }
+
+        groupDiv.appendChild(ratingDiv);
+        return groupDiv;
     }
-
-    groupDiv.appendChild(ratingDiv);
-    return groupDiv;
-}
-
-
 
 });
 
@@ -444,7 +462,9 @@ function createModal(text, status = false) {
   modal.appendChild(modalContent);
 
   // Append modal to document body
-  document.body.appendChild(modal);
+  if (!document.getElementById('myModal')) {
+    document.body.appendChild(modal);
+  }
 
   // Close modal when clicking outside of the modal content
   window.onclick = function(event) {

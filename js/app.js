@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore,collection, addDoc,getDocs,updateDoc,doc,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth,signInWithEmailAndPassword,signOut  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,collection, addDoc,getDocs,updateDoc,doc,query, where,} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// import { getAuth,signInWithEmailAndPassword,signOut  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDJfEIaHcrdMo3EJ6rwrv29GMGla1ULt_M",
@@ -14,11 +14,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
+//===========================//
 async function fetchData() {
     try {
-        const response = await fetch('data/data.json');
+        const response = await fetch('/data/data.json');
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -29,47 +29,185 @@ async function fetchData() {
         return null;
     }
 }
-
+//===========================//
 document.addEventListener('DOMContentLoaded', async ()=>{
+    createSlider();
+
     const container = document.querySelector('main');
     const data = await fetchData();
-    
-    const navbar = createNavbar();
+
+    const navbar = createNavbar(data.services);
     container.appendChild(navbar);
 
     const main_container = document.createElement('div');
     main_container.id = 'main-container';
     container.appendChild(main_container);
 
-    populateHomePage(data);
+    createHomeSection();
+    // createTestimonySection();
+
+    if(window.innerWidth <= 768){
+        main_container.addEventListener('click', () => {
+            let menuContents = document.querySelector('.menu-contents');
+            let icon = document.querySelector('.toggle i');
+            if(menuContents){
+                menuContents.classList.remove('show');
+                icon.className = 'fa-solid fa-bars';
+            }
+
+        });
+    }
+    
 });
 
-async function populateHomePage(data){
-    const container = document.getElementById('main-container');
-    container.innerHTML = "";
+// Create and append the slider container and slides
+function createSlider() {
+    let images = [
+        'https://i.postimg.cc/jSnbXbfn/bg1.jpg', 
+        'https://i.postimg.cc/k5rdYpN1/bg2.jpg', 
+        'https://i.postimg.cc/Dzq39PB2/bg3.jpg', 
+        'https://i.postimg.cc/XJ464Bz9/bg4.jpg', 
+        'https://i.postimg.cc/V6gQ6sxp/bg5.jpg'
+    ];
 
-    const homeSection = createHomeSection();
-    container.appendChild(homeSection);
+    const sliderContainer = document.createElement('div');
+    sliderContainer.classList.add('slider-container');
 
-    data.services.forEach(plan =>{
-        console.log(plan);
-        const section = createSection(plan);
-        container.appendChild(section);
-    })
+    images.forEach((src, index) => {
+        const slide = document.createElement('div');
+        slide.classList.add('slide');
+        if (index === 0) {
+            slide.classList.add('active');
+        }
 
-    const testimonySection = await createTestimonySection()
-    container.appendChild(testimonySection);
+        const img = document.createElement('img');
+        img.src = src;
+        slide.appendChild(img);
+        sliderContainer.appendChild(slide);
+    });
 
-    const faqSection = createFAQSection(data.features);
-    container.appendChild(faqSection);
+    document.body.appendChild(sliderContainer);
 
-    const contactSection = createContactSection();
-    container.appendChild(contactSection);
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    // Function to show the next slide
+    function showNextSlide() {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % totalSlides;
+        slides[currentSlide].classList.add('active');
+    }
+
+    setInterval(showNextSlide, 8000);
 }
+
+//===================//
+function createNavbar(data) {
+    const menuData = [
+        {icon: '<i class="fa-solid fa-home"></i>', text: "Home"},
+        {icon: '<i class="fa-solid fa-book-open-reader"></i>', text: "Thesis Writing"},
+        {icon: '<i class="fa-regular fa-file-lines"></i>', text: "Content Writing"},
+        {icon: '<i class="fa-solid fa-award"></i>', text: "Testimonials"},
+        {icon: '<i class="fa-solid fa-paper-plane"></i>', text: "Contact"}
+    ];
+
+    const navbar = document.createElement('div');
+    navbar.classList.add('navbar');
+
+    const logoContainer = document.createElement('div');
+    logoContainer.classList.add('logo-container');
+
+    const logo = document.createElement('img');
+    logo.src = 'img/ink.png';
+    logoContainer.appendChild(logo);
+
+    const logoText = document.createElement('h1');
+    logoText.textContent = 'Tanvir Writes';
+    logoContainer.appendChild(logoText);
+    navbar.appendChild(logoContainer);
+
+    const menuItemsContainer = document.createElement('div');
+    menuItemsContainer.classList.add('menu-items-container');
+
+    const menuContents = document.createElement('div');
+    menuContents.classList.add('menu-contents');
+
+    if (window.innerWidth <= 768) {
+        const toggleSpan = document.createElement('span');
+        toggleSpan.className = 'toggle';
+        toggleSpan.innerHTML = '<i class="fa-solid fa-bars"></i>';
+        menuItemsContainer.appendChild(toggleSpan);
+
+        toggleSpan.addEventListener('click', () => {
+            menuContents.classList.toggle('show');
+
+            const icon = toggleSpan.querySelector('i');
+            if (menuContents.classList.contains('show')) {
+                icon.className = 'fa-solid fa-x';
+            } else {
+                icon.className = 'fa-solid fa-bars';
+            }
+        });
+    }
+
+    menuData.forEach((item, index) => {
+        const menuItem = document.createElement('div');
+        menuItem.classList.add('menu-item');
+        if (index === 0) {
+            menuItem.classList.add('active'); 
+        }
+
+        const icon = document.createElement('span');
+        icon.innerHTML = item.icon;
+
+        const text = document.createElement('span');
+        text.textContent = item.text;
+
+        menuItem.appendChild(icon);
+        menuItem.appendChild(text);
+
+        menuItem.addEventListener('click', () => {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            menuItem.classList.add('active');
+
+            let section = document.querySelector('.section');
+            section.classList.add('hide');
+
+            setTimeout(() => {
+                if(item.text === 'Home'){
+                    createHomeSection();
+               }else if(item.text === 'Contact'){
+                    createContactSection();
+               }else if(item.text === 'Testimonials'){
+                    createTestimonySection();
+               }else{
+                    const service = data.find(service => service.service_name === item.text);
+                    if (service) {
+                        createServiceSection(service);
+                       
+                    }
+               }
+            }, 490);
+        });
+
+        menuContents.appendChild(menuItem);
+    });
+
+    menuItemsContainer.appendChild(menuContents);
+    navbar.appendChild(menuItemsContainer);
+
+    return navbar;
+}
+
 //=======================//
 function createHomeSection() {
+    showLoadingSpinner();
+
     const homeSection = document.createElement('section');
-    homeSection.classList.add('home-section');
+    homeSection.classList.add('home-section','section');
     
     // Create caption-container
     const captionContainer = document.createElement('div');
@@ -92,9 +230,9 @@ function createHomeSection() {
     completedJobContainer.classList.add('completed-job-container');
     
     const jobCardsData = [
-        { icon:'<i class="fa-solid fa-book-open-reader"></i>', number: 150, title: 'Thesis Writing' },
-        { icon: '<i class="fa-regular fa-file-lines"></i>', number: 320, title: 'Content Writing' },
-        { icon: '<i class="fa fa-newspaper-o"></i>', number: 200, title: 'Research Article' }
+        { icon:'<i class="fa-solid fa-book-open-reader"></i>', number: 44, title: 'Thesis Writing' },
+        { icon: '<i class="fa-regular fa-file-lines"></i>', number: 1720, title: 'Content Writing' },
+        { icon: '<i class="fa fa-newspaper-o"></i>', number: 23, title: 'Research Article' }
     ];
     
     jobCardsData.forEach(job => {
@@ -102,7 +240,7 @@ function createHomeSection() {
         jobCard.classList.add('job-card');
         
         const icon = document.createElement('span');
-        icon.innerHTML= job.icon;
+        icon.innerHTML = job.icon;
         
         const number = document.createElement('span');
         number.className = 'animate-number';
@@ -156,133 +294,30 @@ function createHomeSection() {
         type();
     }
     
-    
-    // Function to animate numbers
-    function animateNumbers() {
-        const counters = document.querySelectorAll('.job-card .animate-number');
-        counters.forEach(counter => {
-            counter.innerText = '0';
-            const updateCounter = () => {
-                const target = +counter.dataset.target;
-                const count = +counter.innerText;
-                const increment = target / 200;
-
-                if (count < target) {
-                    counter.innerText = Math.ceil(count + increment);
-                    setTimeout(updateCounter, 10);
-                } else {
-                    counter.innerText = target;
-                }
-            };
-            updateCounter();
-        });
-    }
-    
+    hideLoadingSpinner();
     // Texts for the typewriter effect
     const texts = [
         'Providing quality thesis writing services.',
         'Delivering top-notch research articles.',
         'Expert content writing solutions.'
     ];
-    
+
     typeWriterEffect(captionP, texts, 100);
-    window.addEventListener('load', animateNumbers);
 
-    return homeSection;
+    const main_container = document.getElementById('main-container');
+    main_container.innerHTML = "";
+    main_container.appendChild(homeSection);
+    
+    animateNumbers()
 }
-//===================//
-function createNavbar() {
-    const menuData = [
-        {icon: '<i class="fa-solid fa-book-open-reader"></i>',text: "Thesis Writing"},
-        {icon: '<i class="fa-regular fa-file-lines"></i>',text: "Content Writing"},
-        {icon: '<i class="fa fa-newspaper-o"></i>',text: "Research Article"},
-        {icon: '<i class="fa-solid fa-paper-plane"></i>',text: "Contact"}
-      ];
-
-    const navbar = document.createElement('div');
-    navbar.classList.add('navbar');
-    
-    const logoContainer = document.createElement('div');
-    logoContainer.classList.add('logo-container');
-
-    const logo = document.createElement('img');
-    logo.src = 'img/ink.png';
-    logoContainer.appendChild(logo);
-
-    const logoText = document.createElement('h1');
-    logoText.textContent = 'Tanvir Writes';
-    logoContainer.appendChild(logoText);
-    navbar.appendChild(logoContainer);
-    
-    const menuItemsContainer = document.createElement('div');
-    menuItemsContainer.classList.add('menu-items-container');
-    
-    const menuContents = document.createElement('div');
-    menuContents.classList.add('menu-contents');
-
-    if(window.innerWidth <= 768){
-        const toggleSpan = document.createElement('span');
-        toggleSpan.className = 'toggle';
-        toggleSpan.innerHTML = '<i class="fa-solid fa-bars"></i>';
-        menuItemsContainer.appendChild(toggleSpan);
-
-        toggleSpan.addEventListener('click', ()=>{
-            menuContents.classList.toggle('show');
-
-            const icon = toggleSpan.querySelector('i');
-            if (menuContents.classList.contains('show')) {
-                icon.className = 'fa-solid fa-x';
-            } else {
-                icon.className = 'fa-solid fa-bars';
-            }
-        });
-    }
-    
-    menuData.forEach(item => {
-        const menuItem = document.createElement('div');
-        menuItem.classList.add('menu-item');
-        
-        const icon = document.createElement('span');
-        icon.innerHTML = item.icon;
-        
-        const text = document.createElement('span');
-        text.textContent = item.text;
-        
-        menuItem.appendChild(icon);
-        menuItem.appendChild(text);
-
-        
-        menuItem.addEventListener('click', () => {
-            if (item.text !== 'Contact') {
-                let classInitials = item.text.split(" ");
-                const section = document.querySelector(`.${classInitials[0].toLocaleLowerCase()}-section`);
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth' });
-                }
-            }else{
-                const section = document.querySelector(`.${item.text.toLocaleLowerCase()}-section`);
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-            
-        });
-        
-        
-        menuContents.appendChild(menuItem);
-    });
-    
-    menuItemsContainer.appendChild(menuContents);
-    navbar.appendChild(menuItemsContainer);
-    
-    return navbar;
-}
-//======================//
-function createSection(sectionData){
+//========================//
+function createServiceSection(sectionData) {
     // console.log(sectionData);
+    showLoadingSpinner();
+
     const section = document.createElement('section');
     let section_classes = sectionData.service_name.split(" ");
-    section.classList.add(`${section_classes[0].toLowerCase()}-section`,'section');
+    section.classList.add(`${section_classes[0].toLowerCase()}-section`, 'section');
 
     const section_header_container = document.createElement('div');
     section_header_container.className = 'section-header-container';
@@ -293,7 +328,7 @@ function createSection(sectionData){
     section_header_container.appendChild(thumbnail);
 
     const header_contents = document.createElement('div');
-    header_contents.className= 'header-contents';
+    header_contents.className = 'header-contents';
     header_contents.innerHTML = `
         <h1>${sectionData.service_name}</h1>
         <p>${sectionData.tagline}<p>
@@ -302,16 +337,59 @@ function createSection(sectionData){
 
     const plan_container = document.createElement('div');
     plan_container.classList.add('plans-container');
-    
-    sectionData.price_tables.forEach(plan =>{
-        const planDiv = createPlanDiv(plan,sectionData.service_name);
-        plan_container.appendChild(planDiv); 
+
+    let currentIndex = 0;
+    const plansPerPage = 4;
+
+    function displayPlans(startIndex) {
+        plan_container.innerHTML = '';
+        const endIndex = Math.min(startIndex + plansPerPage, sectionData.price_tables.length);
+        for (let i = startIndex; i < endIndex; i++) {
+            const planDiv = createPlanDiv(sectionData.price_tables[i], sectionData.service_name);
+            plan_container.appendChild(planDiv);
+        }
+    }
+
+    displayPlans(currentIndex);
+
+    const navButton = document.createElement('button');
+    navButton.classList.add('nav-button');
+    const nextIcon = document.createElement('i');
+    nextIcon.classList.add('fa-solid', 'fa-chevron-right');
+    const prevIcon = document.createElement('i');
+    prevIcon.classList.add('fa-solid', 'fa-chevron-left');
+    navButton.appendChild(nextIcon);
+
+    navButton.addEventListener('click', () => {
+        if (navButton.contains(nextIcon)) {
+            currentIndex += plansPerPage;
+            displayPlans(currentIndex);
+            if (currentIndex + plansPerPage >= sectionData.price_tables.length) {
+                navButton.removeChild(nextIcon);
+                navButton.appendChild(prevIcon);
+            }
+        } else {
+            currentIndex -= plansPerPage;
+            displayPlans(currentIndex);
+            if (currentIndex === 0) {
+                navButton.removeChild(prevIcon);
+                navButton.appendChild(nextIcon);
+            }
+        }
     });
+
 
     section.appendChild(section_header_container);
     section.appendChild(plan_container);
+    if (sectionData.price_tables.length > plansPerPage) {
+        section.appendChild(navButton);
+    }
 
-    return section;
+    hideLoadingSpinner();
+
+    const main_container = document.getElementById('main-container');
+    main_container.innerHTML = "";
+    main_container.appendChild(section);
 }
 
 function createPlanDiv(plan, serviceName) {
@@ -347,14 +425,7 @@ function createPlanDiv(plan, serviceName) {
     // Create the price div
     const priceDiv = document.createElement('div');
     priceDiv.classList.add('price');
-    
-    const priceText = plan.price;
-    if (/\d/.test(priceText)) {
-        priceDiv.innerHTML = `${priceText}<span>Taka</span>`;
-    } else {
-        priceDiv.innerHTML = 'Quote <span>a price</span>';
-    }
-    
+    priceDiv.innerHTML = `${plan.price}<span>Taka</span>`;
     
     // Append title container and price to entry title
     entryTitleDiv.appendChild(titleContainerDiv);
@@ -397,13 +468,205 @@ function createPlanDiv(plan, serviceName) {
     
     return planDiv;
 }
-//============================//
+
+function createContactSection() {
+    // Create the contact-section
+    const contactSection = document.createElement('section');
+    contactSection.classList.add('contact-section','section');
+
+    const head1 = document.createElement('div');
+    head1.classList.add('head');
+    head1.innerHTML = `Contact`;
+    contactSection.appendChild(head1);
+    
+    // Create the contacts-container
+    const contactsContainer = document.createElement('div');
+    contactsContainer.classList.add('contacts-container');
+
+    // Create the contact-info-container
+    const contactInfoContainer = document.createElement('div');
+    contactInfoContainer.classList.add('contact-info-container');
+
+    // Create the contact-info div
+    const contactInfo = document.createElement('div');
+    contactInfo.classList.add('contact-info');
+    const ul = document.createElement('ul');
+
+    // Adding contact details
+    // Adding contact details
+    const contactDetails = [
+        { label: 'Phone:', values: ['+8801521200315', '+8801854702384'], icon: '<i class="fa-solid fa-signal"></i>' },
+        { label: 'Email:', value: 'tanvir.writes.content@gmail.com', icon: '<i class="fa-solid fa-at"></i>'},
+        { label: 'Address:', value: 'Dhaka, Bangladesh', icon: '<i class="fa-solid fa-map-location-dot"></i>' }
+    ];
+
+    contactDetails.forEach(detail => {
+        const li = document.createElement('li');
+        if (detail.label === 'Phone:') {
+            li.innerHTML = `<span class='list-icon'>${detail.icon}</span> <span class='list-text'><strong>${detail.label}</strong> 
+                            ${detail.values.map(phone => `<a href="tel:${phone}">${phone}</a>`).join(' , ')}</span>`;
+        } else if (detail.label === 'Email:') {
+            li.innerHTML = `<span class='list-icon'>${detail.icon}</span> <span class='list-text'><strong>${detail.label}</strong> 
+                            <a href="mailto:${detail.value}">${detail.value}</a></span>`;
+        } else {
+            li.innerHTML = `<span class='list-icon'>${detail.icon}</span> <span class='list-text'><strong>${detail.label}</strong> ${detail.value}</span>`;
+        }
+        ul.appendChild(li);
+    });
+
+    contactInfo.appendChild(ul);
+
+    // Create the social-media-container
+    const socialMediaContainer = createSocialMediaContainer(); // Reuse the function from earlier
+    
+    // Create the credit div
+    const credit = document.createElement('div');
+    credit.classList.add('credit');
+    let creditDate = new Date();
+    credit.textContent = `Tanvir Writes © ${creditDate.getFullYear()} All rights reserved.`;
+
+    // Append all info to contact-info-container
+    contactInfoContainer.appendChild(contactInfo);
+    contactInfoContainer.appendChild(socialMediaContainer);
+    contactInfoContainer.appendChild(credit);
+    
+    // Create the contact-form-container
+    const contactFormContainer = document.createElement('div');
+    contactFormContainer.classList.add('contact-form-container');
+    
+    // Creating the contact form
+    const contactForm = createContactForm(); // Assuming the createContactForm function is defined
+
+    contactFormContainer.appendChild(contactForm);
+
+    // Append both containers to the contacts-container
+    contactsContainer.appendChild(contactInfoContainer);
+    contactsContainer.appendChild(contactFormContainer);
+
+    // Append the contacts-container to the contact section
+    contactSection.appendChild(contactsContainer);
+
+    const main_container = document.getElementById('main-container');
+    main_container.innerHTML = "";
+    main_container.appendChild(contactSection);
+}
+
+function createContactForm(selectedPlan) {
+    // Create the form element
+    const form = document.createElement('form');
+    form.classList.add('contact-form');
+
+    const accessInput = document.createElement('input');
+    accessInput.type = "hidden";
+    accessInput.name = "access_key";
+    accessInput.value = "a147ee20-caf0-4d1a-8584-c38d8231a9fd";
+
+    const subject = document.createElement('input');
+    subject.type = "hidden";
+    subject.name = "subject";
+    subject.value = "New Order";
+
+    const formName = document.createElement('input');
+    formName.type = "hidden";
+    formName.name = "from_name";
+    formName.value = "New Order";
+
+    // Create the name input
+    const nameInput = document.createElement('input');
+    nameInput.setAttribute('type', 'text');
+    nameInput.setAttribute('id', 'name');
+    nameInput.setAttribute('name', 'name');
+    nameInput.setAttribute('placeholder', 'Type your full name');
+    nameInput.setAttribute('required', 'required');
+
+    // Create the contact number input
+    const contactInput = document.createElement('input');
+    contactInput.setAttribute('type', 'tel');
+    contactInput.setAttribute('id', 'contact');
+    contactInput.setAttribute('name', 'contact');
+    contactInput.setAttribute('placeholder', 'Type your mobile number');
+    contactInput.setAttribute('required', 'required');
+
+    // Create the email input
+    const emailInput = document.createElement('input');
+    emailInput.setAttribute('type', 'email');
+    emailInput.setAttribute('id', 'email');
+    emailInput.setAttribute('name', 'email');
+    emailInput.setAttribute('placeholder', 'Type your email address');
+    emailInput.setAttribute('required', 'required');
+
+    // Create the message textarea
+    const messageTextarea = document.createElement('textarea');
+    messageTextarea.setAttribute('id', 'message');
+    messageTextarea.setAttribute('name', 'message');
+    messageTextarea.setAttribute('placeholder', 'Start writing here...');
+    messageTextarea.setAttribute('required', 'required');
+
+    // Create the submit button
+    const submitButton = document.createElement('button');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.innerHTML = "<i class='fa-solid fa-truck-fast'></i> Submit";
+
+    // Append all elements to the form
+    form.appendChild(accessInput);
+    form.appendChild(subject);
+    form.appendChild(formName);
+    form.appendChild(nameInput);
+    form.appendChild(contactInput);
+    form.appendChild(emailInput);
+    form.appendChild(messageTextarea);
+    form.appendChild(submitButton);
+
+    form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+        const formData = new FormData(form);
+        const object = Object.fromEntries(formData);
+        object.subject = `New Order from ${object.name}`;
+
+        const mergedObject = { ...object, ...selectedPlan };
+        const json = JSON.stringify(mergedObject);
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: json
+        })
+        .then(async (response) => {
+            let json = await response.json();
+            if (response.status == 200) {
+                submitButton.innerHTML = "<i class='fa-solid fa-truck-fast'></i> Submit";
+                createWarningModal("Your order is placed successfully.",'<i class="fa-regular fa-thumbs-up"></i> Sent Successfully');
+            } else {
+                console.log(response);
+                submitButton.innerHTML = "<i class='fa-solid fa-truck-fast'></i> Submit";
+                createWarningModal("Something went wrong. Your message has not been sent. Try again.");
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    });
+
+
+    return form;
+}
+//=======================//
 async function createTestimonySection() {
+    showLoadingSpinner();
+
+    const main_container = document.getElementById('main-container');
+    main_container.innerHTML = "";
+
     let data = [];
-    const querySnapshot = await getDocs(collection(db, "testimonials"));
-    querySnapshot.forEach((doc) => {
+    const q = query(collection(db, "testimonials"), where("shouldUse", "==", true));
+    const querySnapshott = await getDocs(q);
+    querySnapshott.forEach((doc) => {
         let testy = doc.data();
-        testy.id = doc.id;
         data.push(testy);
     });
 
@@ -602,171 +865,57 @@ async function createTestimonySection() {
   }
 
   // Return the section element
-  return section;
+  hideLoadingSpinner();
+  
+  main_container.appendChild(section);
 }
-//==========================//
-function createFAQSection(data) {
-    // Create the faq-section
-    const faqSection = document.createElement('section');
-    faqSection.classList.add('faq-section','section');
+//=======================//
+// Function to animate numbers using IntersectionObserver
+function animateNumbers() {
+    const counters = document.querySelectorAll('.job-card .animate-number');
+    const observerOptions = {
+        root: null,
+        threshold: 0.9
+    };
 
-    const section_header_container = document.createElement('div');
-    section_header_container.className = 'section-header-container';
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = +counter.dataset.target;
+                const isSlow = target < 100;
+                const updateCounter = () => {
+                    const count = +counter.innerText;
+                    let increment;
+                    let delay;
 
-    const thumbnail = document.createElement('div');
-    thumbnail.className = 'thumbnail';
-    thumbnail.innerHTML = '<i class="fa-solid fa-list-check"></i>';
-    section_header_container.appendChild(thumbnail);
+                    if (isSlow) {
+                        increment = target / 400; // Smaller increment for slower animation
+                        delay = 40; // Longer delay for slower animation
+                    } else {
+                        increment = target / 200;
+                        delay = 10;
+                    }
 
-    const header_contents = document.createElement('div');
-    header_contents.className= 'header-contents';
-    header_contents.innerHTML = `
-        <h1>Why You Should Choose Me</h1>
-        <p>Check all the features of the services<p>
-    `;
-    section_header_container.appendChild(header_contents);
-    faqSection.appendChild(section_header_container)
-
-    const accordion_container = document.createElement('div');
-    accordion_container.className = 'accordion-container';
-
-    data.forEach((item, index) => {
-        // Create the accordion-item div
-        const accordionItem = document.createElement('div');
-        accordionItem.classList.add('accordion-item');
-        
-        // Create the header for the accordion
-        const header = document.createElement('div');
-        header.classList.add('accordion-header');
-        
-        // Create the feature text and append it to the header
-        const featureText = document.createElement('span');
-        featureText.textContent = item.feature;
-        header.appendChild(featureText);
-
-        // Create the down arrow span and append it to the header
-        const downArrow = document.createElement('span');
-        downArrow.classList.add('down-arrow');
-        downArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>'; 
-        header.appendChild(downArrow);
-
-        // Create the content for the accordion
-        const content = document.createElement('div');
-        content.classList.add('accordion-content');
-        item.description.forEach((desc, index) => {
-            const p = document.createElement('p');
-            p.textContent = `${index + 1}. ${desc}`;
-            content.appendChild(p);
-        });
-
-        // Add event listener to header to toggle accordion content and show class
-        header.addEventListener('click', () => {
-            const isActive = content.classList.contains('active');
-            document.querySelectorAll('.accordion-content').forEach((content) => {
-                content.classList.remove('active');
-            });
-            document.querySelectorAll('.accordion-header').forEach((header) => {
-                header.classList.remove('show');
-            });
-            if (!isActive) {
-                content.classList.add('active');
-                header.classList.add('show');
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + increment);
+                        setTimeout(updateCounter, delay);
+                    } else {
+                        counter.innerText = target;
+                        observer.unobserve(counter);
+                    }
+                };
+                updateCounter();
             }
         });
+    }, observerOptions);
 
-        // Append header and content to accordion item
-        accordionItem.appendChild(header);
-        accordionItem.appendChild(content);
-
-        // Append accordion item to faq-section
-        accordion_container.appendChild(accordionItem);
+    counters.forEach(counter => {
+        observer.observe(counter);
     });
-    faqSection.appendChild(accordion_container);
-
-    return faqSection;
-}
-//============================//
-function createContactSection() {
-    // Create the contact-section
-    const contactSection = document.createElement('section');
-    contactSection.classList.add('contact-section');
-
-    const head1 = document.createElement('div');
-    head1.classList.add('head');
-    head1.innerHTML = `Contact`;
-    contactSection.appendChild(head1);
-    
-    // Create the contacts-container
-    const contactsContainer = document.createElement('div');
-    contactsContainer.classList.add('contacts-container');
-
-    // Create the contact-info-container
-    const contactInfoContainer = document.createElement('div');
-    contactInfoContainer.classList.add('contact-info-container');
-
-    // Create the contact-info div
-    const contactInfo = document.createElement('div');
-    contactInfo.classList.add('contact-info');
-    const ul = document.createElement('ul');
-
-    // Adding contact details
-// Adding contact details
-const contactDetails = [
-    { label: 'Phone:', values: ['+8801521200315', '+8801854702384'], icon: '<i class="fa-solid fa-signal"></i>' },
-    { label: 'Email:', value: 'tanvir.writes.content@gmail.com', icon: '<i class="fa-solid fa-at"></i>'},
-    { label: 'Address:', value: 'Dhaka, Bangladesh', icon: '<i class="fa-solid fa-map-location-dot"></i>' }
-];
-
-contactDetails.forEach(detail => {
-    const li = document.createElement('li');
-    if (detail.label === 'Phone:') {
-        li.innerHTML = `<span class='list-icon'>${detail.icon}</span> <span class='list-text'><strong>${detail.label}</strong> 
-                        ${detail.values.map(phone => `<a href="tel:${phone}">${phone}</a>`).join(' , ')}</span>`;
-    } else if (detail.label === 'Email:') {
-        li.innerHTML = `<span class='list-icon'>${detail.icon}</span> <span class='list-text'><strong>${detail.label}</strong> 
-                        <a href="mailto:${detail.value}">${detail.value}</a></span>`;
-    } else {
-        li.innerHTML = `<span class='list-icon'>${detail.icon}</span> <span class='list-text'><strong>${detail.label}</strong> ${detail.value}</span>`;
-    }
-    ul.appendChild(li);
-});
-
-contactInfo.appendChild(ul);
-
-    // Create the social-media-container
-    const socialMediaContainer = createSocialMediaContainer(); // Reuse the function from earlier
-    
-    // Create the credit div
-    const credit = document.createElement('div');
-    credit.classList.add('credit');
-    let creditDate = new Date();
-    credit.textContent = `Tanvir Writes © ${creditDate.getFullYear()} All rights reserved.`;
-
-    // Append all info to contact-info-container
-    contactInfoContainer.appendChild(contactInfo);
-    contactInfoContainer.appendChild(socialMediaContainer);
-    contactInfoContainer.appendChild(credit);
-    
-    // Create the contact-form-container
-    const contactFormContainer = document.createElement('div');
-    contactFormContainer.classList.add('contact-form-container');
-    
-    // Creating the contact form
-    const contactForm = createContactForm(); // Assuming the createContactForm function is defined
-
-    contactFormContainer.appendChild(contactForm);
-
-    // Append both containers to the contacts-container
-    contactsContainer.appendChild(contactInfoContainer);
-    contactsContainer.appendChild(contactFormContainer);
-
-    // Append the contacts-container to the contact section
-    contactSection.appendChild(contactsContainer);
-
-    return contactSection;
 }
 
-//============================//
+//====================//
 function createSocialMediaContainer() {
     const socialMediaData = [
         {
@@ -828,7 +977,6 @@ function createSocialMediaContainer() {
     return socialMediaContainer;
 }
 
-//=============================//
 function createModal(packageData, serviceName) {
     // Create the modal container
     const modal = document.createElement('div');
@@ -849,7 +997,7 @@ function createModal(packageData, serviceName) {
     // Create the close button
     const closeButton = document.createElement('span');
     closeButton.classList.add('close-button');
-    closeButton.innerHTML = '&times;';
+    closeButton.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
 
     // Append title and close button to header
     modalHeader.appendChild(modalTitle);
@@ -868,6 +1016,7 @@ function createModal(packageData, serviceName) {
         <p><strong>Package included:</strong> ${packageData.slogan}</p>
         <p><strong>Price:</strong> ${packageData.price} TK.</p>
     `;
+
 
     // Create the order-form-container div
     const orderFormContainer = document.createElement('div');
@@ -921,9 +1070,6 @@ function createModal(packageData, serviceName) {
         packageData.package_details.forEach(detail => {
             body += `- ${detail}\n`;
         });
-
-        // Encode the email subject and body
-        // subject = encodeURIComponent(subject);
         body = encodeURIComponent(body);
 
         // Open email client with the constructed email
@@ -941,9 +1087,8 @@ function createModal(packageData, serviceName) {
 
     // Add click event to form-order to remove other order options
     formOrder.addEventListener('click', () => {
-        window.location.href = `https://tanvir-abid.github.io/tanvirWrites/registration/index.html?id=${packageData.ID}`;
+        window.location.href = `/registration/index.html?id=${packageData.ID}`;
     });
-    
 
     // Append order options to order-form-container
     orderFormContainer.appendChild(whatsappOrder);
@@ -962,180 +1107,121 @@ function createModal(packageData, serviceName) {
 
     // Add event listener to close button to close the modal
     closeButton.addEventListener('click', () => {
-        modal.remove()
+        closeModal();
     });
 
     // Add event listener to window to close the modal when clicking outside of it
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
-            modal.remove();
+            closeModal();
         }
     });
 
     // Return the modal element
     document.body.appendChild(modal);
+
+    function closeModal() {
+        modal.style.animation = 'fadeOut 0.5s forwards';
+        modalContent.style.animation = 'slideOut 0.5s forwards';
+        setTimeout(() => {
+            modal.remove();
+        }, 500);
+    }
 }
 
-function createContactForm(selectedPlan) {
-    // Create the form element
-    const form = document.createElement('form');
-    form.classList.add('contact-form');
-
-    const accessInput = document.createElement('input');
-    accessInput.type = "hidden";
-    accessInput.name = "access_key";
-    accessInput.value = "a147ee20-caf0-4d1a-8584-c38d8231a9fd";
-
-    const subject = document.createElement('input');
-    subject.type = "hidden";
-    subject.name = "subject";
-    subject.value = "New Order";
-
-    const formName = document.createElement('input');
-    formName.type = "hidden";
-    formName.name = "from_name";
-    formName.value = "New Order";
-
-    // Create the name input
-    const nameInput = document.createElement('input');
-    nameInput.setAttribute('type', 'text');
-    nameInput.setAttribute('id', 'name');
-    nameInput.setAttribute('name', 'name');
-    nameInput.setAttribute('placeholder', 'Type your full name');
-    nameInput.setAttribute('required', 'required');
-
-    // Create the contact number input
-    const contactInput = document.createElement('input');
-    contactInput.setAttribute('type', 'tel');
-    contactInput.setAttribute('id', 'contact');
-    contactInput.setAttribute('name', 'contact');
-    contactInput.setAttribute('placeholder', 'Type your mobile number');
-    contactInput.setAttribute('required', 'required');
-
-    // Create the email input
-    const emailInput = document.createElement('input');
-    emailInput.setAttribute('type', 'email');
-    emailInput.setAttribute('id', 'email');
-    emailInput.setAttribute('name', 'email');
-    emailInput.setAttribute('placeholder', 'Type your email address');
-    emailInput.setAttribute('required', 'required');
-
-    // Create the message textarea
-    const messageTextarea = document.createElement('textarea');
-    messageTextarea.setAttribute('id', 'message');
-    messageTextarea.setAttribute('name', 'message');
-    messageTextarea.setAttribute('placeholder', 'Start writing here...');
-    messageTextarea.setAttribute('required', 'required');
-
-    // Create the submit button
-    const submitButton = document.createElement('button');
-    submitButton.setAttribute('type', 'submit');
-    submitButton.innerHTML = "<i class='fa-solid fa-truck-fast'></i> Submit";
-
-    // Append all elements to the form
-    form.appendChild(accessInput);
-    form.appendChild(subject);
-    form.appendChild(formName);
-    form.appendChild(nameInput);
-    form.appendChild(contactInput);
-    form.appendChild(emailInput);
-    form.appendChild(messageTextarea);
-    form.appendChild(submitButton);
-
-    form.addEventListener('submit', (e)=>{
-        e.preventDefault();
-        submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
-        const formData = new FormData(form);
-        const object = Object.fromEntries(formData);
-        object.subject = `New Order from ${object.name}`;
-
-        const mergedObject = { ...object, ...selectedPlan };
-        const json = JSON.stringify(mergedObject);
-        console.log(mergedObject);
-        console.log(json);
-
-        fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: json
-        })
-        .then(async (response) => {
-            let json = await response.json();
-            if (response.status == 200) {
-                submitButton.innerHTML = "<i class='fa-solid fa-truck-fast'></i> Submit";
-                createWarningModal("Your order is placed successfully.");
-            } else {
-                console.log(response);
-                submitButton.innerHTML = "<i class='fa-solid fa-truck-fast'></i> Submit";
-                createWarningModal("Your order has not been placed. Try again.");
-            }
-        })
-        .catch(error => {
-            console.log(error);
-        })
-    });
-
-
-    return form;
-}
-
-function createWarningModal(warningText) {
-    // Create the modal container
-    const modal = document.createElement('div');
-    modal.classList.add('modal','warning');
-
-    // Create the modal content
-    const modalContent = document.createElement('div');
-    modalContent.classList.add('modal-content');
-
-    // Create the modal header
-    const modalHeader = document.createElement('div');
-    modalHeader.classList.add('modal-header');
+function showLoadingSpinner() {
+    // Create the loading container div
+    const loadingContainer = document.createElement('div');
+    loadingContainer.className = 'loading-container';
     
-    // Create the header text
+    // Create multiple loading dots for the animation
+    for (let i = 0; i < 4; i++) {
+        const loading = document.createElement('div');
+        loading.className = 'loading';
+        loadingContainer.appendChild(loading);
+    }
+    
+    // Append the loading container to the body
+    document.body.appendChild(loadingContainer);
+}
+
+// Function to remove the loading spinner
+function hideLoadingSpinner() {
+    const loadingContainer = document.querySelector('.loading-container');
+    if (loadingContainer) {
+        document.body.removeChild(loadingContainer);
+    }
+}
+
+function createWarningModal(text,header) {
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'myModal';
+    modal.className = 'modal';
+
+    // Create modal content container
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    // Create modal header
+    const modalHeader = document.createElement('div');
+    modalHeader.className = 'modal-header';
+
+    // Create header text
     const headerText = document.createElement('h3');
-    headerText.textContent = 'Warning';
 
-    // Create the close button
+    // Create close button
     const closeButton = document.createElement('span');
-    closeButton.classList.add('close-button');
-    closeButton.innerHTML = '&times;';
+    closeButton.className = 'close-button';
+    closeButton.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+    closeButton.onclick = function() {
+        closeModal();
+    };
 
-    // Create the modal body
-    const modalBody = document.createElement('div');
-    modalBody.classList.add('modal-body');
-    modalBody.textContent = warningText;
-
-    // Append header text and close button to modal header
+    // Append header text and close button to header
     modalHeader.appendChild(headerText);
     modalHeader.appendChild(closeButton);
 
-    // Append modal header and modal body to modal content
+    // Create modal body
+    const modalBody = document.createElement('div');
+    modalBody.className = 'modal-body warning';
+
+    // headerText.innerHTML = header || '<i class="fa-solid fa-circle-radiation"></i> Warning';
+    // Determine the content of the header
+    if (typeof header === 'string') {
+        headerText.innerHTML = header;
+    } else {
+        headerText.innerHTML = '<i class="fa-solid fa-circle-radiation"></i> Warning';
+    }
+    
+    const bodyText = document.createElement('div');
+    bodyText.innerHTML = text;  // Append body text to body
+    modalBody.appendChild(bodyText);
+
+    // Append header and body to content container
     modalContent.appendChild(modalHeader);
     modalContent.appendChild(modalBody);
 
-    // Append modal content to modal container
+    // Append content container to modal
     modal.appendChild(modalContent);
 
-    // Append the modal to the body
+    // Append modal to document body
     document.body.appendChild(modal);
 
-    // Add event listener to close button
-    closeButton.addEventListener('click', () => {
-        modal.remove();
-    });
-
-    // Add event listener to close modal when clicking outside of it
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.remove();
+    // Close modal when clicking outside of the modal content
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
         }
-    });
+    };
 
-    return modal;
+    function closeModal() {
+        modal.style.animation = 'fadeOut 0.5s forwards';
+        modalContent.style.animation = 'slideOut 0.5s forwards';
+        setTimeout(() => {
+            modal.remove();
+        }, 499);
+    }
 }
+
 

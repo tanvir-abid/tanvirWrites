@@ -26,7 +26,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// createSidebarAndMainContainer();
+
 //=====================//
 function createSignInContainer() {
     // Create the signIn-container div
@@ -1005,7 +1005,7 @@ async function displaySetting() {
         coupons.push(doc.data());
     });
 
-    hideLoadingSpinner();
+
 
     // Helper function to create a coupon list item
     function createCouponListItem(coupon) {
@@ -1197,9 +1197,131 @@ async function displaySetting() {
     // Append containers
     couponContainer.appendChild(addNewContainer);
     settingContainer.appendChild(couponContainer);
+    //-----------------------------------------//
+    const testimonials = [];
+    const testimonialsRef = await getDocs(collection(db, "testimonials"));
+    testimonialsRef.forEach((doc) => {
+        let testimonial = doc.data();
+        testimonial.id = doc.id;
+        testimonials.push(testimonial);
+    });
+    const testimonialContainer = document.createElement('div');
+    testimonialContainer.className = 'testimonial-container';
+
+    const testimoyH1 = document.createElement('h2');
+    testimoyH1.textContent = "All testimonials";
+    testimonialContainer.appendChild(testimoyH1);
+    // Function to create table
+    let table = createTable(testimonials);
+    // Append table to container
+    testimonialContainer.appendChild(table);
+
+    hideLoadingSpinner();
+    //-----------------------------------------//
     mainContainer.appendChild(settingContainer);
+    mainContainer.appendChild(testimonialContainer);
 }
 
+function createTable(data) {
+    const table = document.createElement('table');
+    table.className = 'projects-table';
+
+    // Create table header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const headers = ['Name', 'Gender', 'Institute', 'Email', 'Rate', 'Comment', 'Action'];
+    headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create table body
+    const tbody = document.createElement('tbody');
+    data.forEach(item => {
+        const row = document.createElement('tr');
+
+        // Function to create a cell
+        const createCell = (text, label) => {
+            const cell = document.createElement('td');
+            cell.textContent = text;
+            cell.setAttribute('data-label', label);
+            return cell;
+        };
+
+        // Create cells in the specified order using createCell function
+        row.appendChild(createCell(item.name, 'Name'));
+        row.appendChild(createCell(item.gender, 'Gender'));
+        row.appendChild(createCell(item.institute, 'Institute'));
+        row.appendChild(createCell(item.email, 'Email'));
+        row.appendChild(createCell(item.rating, 'Rate'));
+
+        const commentCell = document.createElement('td');
+        commentCell.textContent = item.comment;
+        commentCell.setAttribute('data-label', "Comment");
+        row.appendChild(commentCell);
+        commentCell.addEventListener('click', ()=>{
+            createModal('Comment',item.comment);
+        });
+
+        // Create toggle switch
+        const toggleTd = document.createElement('td');
+        toggleTd.setAttribute('data-label', "Action");
+        const toggleLabel = document.createElement('label');
+        toggleLabel.className = 'switch';
+        const toggleInput = document.createElement('input');
+        toggleInput.type = 'checkbox';
+        toggleInput.checked = item.shouldUse;
+        toggleInput.addEventListener('change',async () => {
+            item.shouldUse = toggleInput.checked;
+            console.log(item);
+            const washingtonRef = doc(db, "testimonials", item.id);
+            await updateDoc(washingtonRef, {
+                shouldUse: toggleInput.checked
+            });
+
+            createModal(`Testimonial from ${item.name} has been ${toggleInput.checked ? 'shown' : 'hidden'}.`,'Updated'); 
+        });
+        const toggleSpan = document.createElement('span');
+        toggleSpan.className = 'slider';
+
+        toggleLabel.appendChild(toggleInput);
+        toggleLabel.appendChild(toggleSpan);
+        toggleTd.appendChild(toggleLabel);
+        row.appendChild(toggleTd);
+
+        // Create delete button
+        const actionTd = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        deleteButton.className = 'delete-button';
+        deleteButton.addEventListener('click', () => {
+            console.log(item);
+            createModal('Are you sure you want to delete this testimony ?','Confirm', async () => {
+                try {
+                    await deleteDoc(doc(db, "testimonials", item.id));
+                    
+                    // Remove the element from the DOM
+                    row.remove();
+                    
+                    createModal('Testimony is deleted.');
+                } catch (error) {
+                    console.error('Error archiving project:', error);
+                }
+            });
+        });
+        toggleTd.appendChild(deleteButton);
+
+
+        tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+
+    return table
+}
+// ====================//
 // Function to generate a readable and unique coupon code
 function generateReadableUniqueID() {
     const adjectives = [
@@ -1274,7 +1396,7 @@ function letSignOut(){
 }
 
 
-function createModal(text, callback) {
+function createModal(text,header, callback) {
     // Create modal container
     const modal = document.createElement('div');
     modal.id = 'myModal';
@@ -1307,7 +1429,14 @@ function createModal(text, callback) {
     const modalBody = document.createElement('div');
     modalBody.className = 'modal-body';
 
-    headerText.innerHTML = '<i class="fa-solid fa-circle-radiation"></i> Warning';
+    // headerText.innerHTML = header || '<i class="fa-solid fa-circle-radiation"></i> Warning';
+    // Determine the content of the header
+    if (typeof header === 'string') {
+        headerText.innerHTML = header;
+    } else {
+        headerText.innerHTML = '<i class="fa-solid fa-circle-radiation"></i> Warning';
+    }
+    
     const bodyText = document.createElement('div');
     bodyText.innerHTML = text;  // Append body text to body
     modalBody.appendChild(bodyText);

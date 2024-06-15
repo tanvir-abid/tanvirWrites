@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 *{
     margin: 0;
@@ -11,12 +11,12 @@
 }
 
 body{
-    font-family: "Playfair Display", serif;
+    font-family: "Poppins", sans-serif;
     font-weight: 300;
     font-style: normal;
     background-color: #CB7C4B;
     overflow-x: hidden;
-    background-image: url(../img/bg.jpg);
+    background-image: url(https://i.postimg.cc/zBzrhhDj/feedback.jpg);
     background-position: center;
     background-size: cover;
     min-height: 97dvh;
@@ -48,7 +48,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
     color: #fff;
 }
@@ -144,7 +144,7 @@ main {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 30px;
+    /* gap: 25px; */
     position: relative;
     z-index: 1;
 }
@@ -152,6 +152,11 @@ main {
 .input-group {
     position: relative;
     width: 100%;
+    margin-bottom: 25px;
+}
+
+.input-group.inputs.comment {
+    margin-bottom: 8px;
 }
 
 label {
@@ -160,6 +165,7 @@ label {
     letter-spacing: 2px;
     z-index: -1;
     color: #e2e0e0;
+    font-size: 12px;
 }
 
 .rating-group label{
@@ -178,7 +184,7 @@ label {
 }
 
 .inputs.comment::after{
-    bottom: 3px;
+    bottom: 6px;
 }
 
 .inputs.active::after{
@@ -187,27 +193,36 @@ label {
 }
 
 .input-group.active label{
-    transform: translateY(-25px);
+    transform: translateY(-15px);
     color: #fff;
 }
 
 .input-group.selected label{
-    transform: translateY(-25px);
+    transform: translateY(-15px);
 }
 
 .input-group.active label.comment-label{
-    transform: translateY(-20px);
+    transform: translateY(-17px);
 }
 
 .input-group.selected label.comment-label{
-    transform: translateY(-20px);
+    transform: translateY(-17px);
 }
 
-label.comment-label{
+label.comment-label {
     position: absolute;
     left: 0;
     top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 98%;
 }
+
+label.comment-label span:last-child{
+    font-size: 10px;
+}
+
 label.name-label,
 label.email-label,
 label.institute-label{
@@ -226,7 +241,7 @@ textarea {
     border-bottom: 1px solid #fff;
     outline: none;
     width: calc(100% - 24px); 
-    font-size: 16px;
+    font-size: 14px;
     background-color: transparent;
     position: relative;
     color: #fff;
@@ -238,7 +253,7 @@ textarea {
 
 textarea {
     resize: vertical; 
-    min-height: 10dvh;
+    min-height: 18dvh;
 }
 
 form button[type="submit"] {
