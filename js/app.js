@@ -18,7 +18,7 @@ const db = getFirestore(app);
 //===========================//
 async function fetchData() {
     try {
-        const response = await fetch('/data/data.json');
+        const response = await fetch('https://tanvir-abid.github.io/tanvirWrites/data/data.json');
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
