@@ -1263,7 +1263,7 @@ function createTable(data) {
         commentCell.setAttribute('data-label', "Comment");
         row.appendChild(commentCell);
         commentCell.addEventListener('click', ()=>{
-            createModal('Comment',item.comment);
+            createModal(item.comment,'Comment');
         });
 
         // Create toggle switch
@@ -1276,7 +1276,7 @@ function createTable(data) {
         toggleInput.checked = item.shouldUse;
         toggleInput.addEventListener('change',async () => {
             item.shouldUse = toggleInput.checked;
-            console.log(item);
+
             const washingtonRef = doc(db, "testimonials", item.id);
             await updateDoc(washingtonRef, {
                 shouldUse: toggleInput.checked
