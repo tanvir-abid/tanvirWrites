@@ -133,24 +133,6 @@ function createNavbar(data) {
     const menuContents = document.createElement('div');
     menuContents.classList.add('menu-contents');
 
-    if (window.innerWidth <= 768) {
-        const toggleSpan = document.createElement('span');
-        toggleSpan.className = 'toggle';
-        toggleSpan.innerHTML = '<i class="fa-solid fa-bars"></i>';
-        menuItemsContainer.appendChild(toggleSpan);
-
-        toggleSpan.addEventListener('click', () => {
-            menuContents.classList.toggle('show');
-
-            const icon = toggleSpan.querySelector('i');
-            if (menuContents.classList.contains('show')) {
-                icon.className = 'fa-solid fa-x';
-            } else {
-                icon.className = 'fa-solid fa-bars';
-            }
-        });
-    }
-
     menuData.forEach((item, index) => {
         const menuItem = document.createElement('div');
         menuItem.classList.add('menu-item');
@@ -197,6 +179,25 @@ function createNavbar(data) {
     });
 
     menuItemsContainer.appendChild(menuContents);
+
+    if (window.innerWidth <= 768) {
+        const toggleSpan = document.createElement('span');
+        toggleSpan.className = 'toggle';
+        toggleSpan.innerHTML = '<i class="fa-solid fa-bars"></i>';
+        menuItemsContainer.appendChild(toggleSpan);
+
+        toggleSpan.addEventListener('click', () => {
+            menuContents.classList.toggle('show');
+
+            const icon = toggleSpan.querySelector('i');
+            if (menuContents.classList.contains('show')) {
+                icon.className = 'fa-solid fa-x';
+            } else {
+                icon.className = 'fa-solid fa-bars';
+            }
+        });
+    }
+
     navbar.appendChild(menuItemsContainer);
 
     return navbar;
@@ -759,12 +760,14 @@ async function createTestimonySection() {
       ratingDiv.appendChild(star);
     }
 
+    const clientInfoContainer = document.createElement('div');
+    clientInfoContainer.className = "client-info-container";
     // Append img, h2, and rating div to client div
     clientDiv.appendChild(img);
-    clientDiv.appendChild(h2);
-    clientDiv.appendChild(instP);
-    clientDiv.appendChild(ratingDiv);
-
+    clientInfoContainer.appendChild(h2);
+    clientInfoContainer.appendChild(instP);
+    clientInfoContainer.appendChild(ratingDiv);
+    clientDiv.appendChild(clientInfoContainer);
     // Create the comment div
     const commentDiv = document.createElement('div');
     commentDiv.className = 'comment';

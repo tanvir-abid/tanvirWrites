@@ -126,21 +126,26 @@ body {
     font-size: 24px;
     cursor: pointer;
     color: #fff;
-    padding: 10px;
+    padding: 5px 10px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {
+    .logo-container{
+        padding: 4px 12px;
+    }
+    .logo-container h1{
+        font-size: 20px;
+    }
     .menu-contents {
         flex-direction: column;
         display: flex;
         position: fixed;
-        top: 0px;
-        left: 0;
+        top: -2px;
+        left: -1px;
         height: 100dvh;
         background: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(10px);
-        border-radius: 10px;
         border: 1px solid rgba(255, 255, 255, 0.2);
         padding: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -156,7 +161,7 @@ body {
     .toggle {
         display: block;
         position: fixed;
-        top: 5px;
+        top: 0px;
         right: 0;
     }
 }
@@ -164,9 +169,10 @@ body {
 .section{
     position: relative;
     padding-bottom: 20px;
-    min-height: 70dvh;
+    /* min-height: 70dvh; */
     transition: all 0.5s ease;
     animation: sectionUp 0.5s ease;
+
 }
 
 @keyframes sectionUp {
@@ -201,7 +207,32 @@ body {
 }
 
 .section-header-container h1{
-    font-size: 22pxpx;
+    font-size: 22px;
+    text-transform: uppercase;
+}
+
+@media screen and (max-width: 768px) {
+    .section{
+        max-height: 90dvh;
+        overflow-y: auto;
+    }
+
+    .section-header-container {
+        gap: 5px;
+        padding: 5px 0;
+    }
+    
+    .section-header-container i{
+        font-size: 40px;
+    }
+    
+    .section-header-container h1{
+        font-size: 18px;
+    }
+
+    .section-header-container p{
+        font-size: 11px;
+    }
 }
 
 .home-section {
@@ -338,6 +369,7 @@ body {
 @media screen and (max-width: 768px) {
     .completed-job-container {
         gap: 10px;
+        width: 100%;
     }
 
     .job-card {
@@ -360,7 +392,6 @@ body {
 
 /* Style for each plan */
 .plan {
-    /* flex: 1 1 calc(25% - 10px); */
     background: rgba(0,0,0, 0.2);
     border-radius: 15px;
     padding: 20px;
@@ -541,8 +572,23 @@ body {
 @media (max-width: 768px) {
     .plans-container {
         grid-template-columns: 1fr;
-        height: 75dvh;
-        overflow-y: auto;
+        /* height: 75dvh;
+        overflow-y: auto; */
+    }
+
+    .content-section{
+        border-bottom: none;
+    }
+
+    .nav-button{
+        position: fixed;
+        bottom: 5px;
+        left: unset;
+        right: 5px;
+        transform: none;
+        padding: 7px 10px;
+        font-size: 15px;
+        background-color: rgb(255, 32, 78);
     }
 }
 
@@ -642,7 +688,7 @@ body {
     padding: 10px 5px;
     color: #fff;
     border-bottom: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 0;
+    border-radius: 5px;
 }
 
 .contact-form textarea {
@@ -681,7 +727,12 @@ body {
     .contacts-container {
         width: 90%;
         padding: 10px;
-        flex-direction: column;
+        flex-direction: column-reverse;
+    }
+
+    .head {
+        font-size: 3em;
+        padding: 10px 0;
     }
 }
 
@@ -705,10 +756,17 @@ body {
     padding: 2rem;
     margin-bottom: 2rem;
     transition: all 0.6s ease;
+    height: 60dvh;
 }
 
 
 .client {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.client .client-info-container{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -826,6 +884,38 @@ body {
   display: flex;
 }
 
+@media screen and (max-width: 768px) {
+    .testimony{
+        margin-bottom: 5px;
+    }
+
+    .client{
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .client .client-info-container{
+        align-items: flex-start;
+    }
+
+    .rating{
+        margin: 0;
+    }
+
+    .comment{
+        margin-top: 0;
+    }
+
+    .comment blockquote {
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+
+    .dot-container{
+        margin-top: 5px;
+    }
+}
 
 /*************/
 /* Modal Container */
