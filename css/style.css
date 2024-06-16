@@ -367,6 +367,12 @@ body {
 }
 
 @media screen and (max-width: 768px) {
+    .caption-container p {
+        font-size: 15px;
+        margin-bottom: 20px;
+        height: 20px;
+    }
+
     .completed-job-container {
         gap: 10px;
         width: 100%;

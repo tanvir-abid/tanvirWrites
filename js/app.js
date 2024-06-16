@@ -1090,7 +1090,7 @@ function createModal(packageData, serviceName) {
 
     // Add click event to form-order to remove other order options
     formOrder.addEventListener('click', () => {
-        window.location.href = `/registration/index.html?id=${packageData.ID}`;
+        window.location.href = `https://tanvir-abid.github.io/tanvirWrites/registration/index.html?id=${packageData.ID}`;
     });
 
     // Append order options to order-form-container

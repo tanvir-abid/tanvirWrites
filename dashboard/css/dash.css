@@ -375,10 +375,6 @@ form button:hover {
     color: #fff;
 }
 
-
-
-
-
 @media screen and (max-width: 768px) {
     .projects-table {
     border: 0;
@@ -426,6 +422,12 @@ form button:hover {
   .projects-table td:last-child {
     border-bottom: 0;
   }
+
+  .projects-table tr td:first-child{
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+  }
+
 }
 /*============================*/
 .coupons-container {
@@ -874,4 +876,10 @@ table td[data-label="Action"] {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+    table td[data-label="Comment"] {
+        max-width: 353px;
+    }
 }
