@@ -837,7 +837,7 @@ function createProjectsTable(dataArray, isFromArchive=false) {
         if (isFromArchive) {
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
-            deleteButton.onclick = () => handleDelete(data, row); // Define handleDelete function
+            deleteButton.onclick = () => handleDelete(data, row, "Archive"); // Define handleDelete function
             actionsCell.appendChild(deleteButton);
         } else {
             const archiveButton = document.createElement('button');
@@ -849,7 +849,7 @@ function createProjectsTable(dataArray, isFromArchive=false) {
 
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
-            deleteButton.onclick = () => handleDelete(data, row); // Define handleDelete function
+            deleteButton.onclick = () => handleDelete(data, row, "Projects"); // Define handleDelete function
             actionsCell.appendChild(deleteButton);
         }
 
@@ -957,10 +957,10 @@ async function displayArchieve(){
     hideLoadingSpinner();
 }
 
-async function handleDelete(data, elm) {
+async function handleDelete(data, elm, col) {
     createModal('Are you sure you want to delete this project ?', '<i class="fa-solid fa-circle-radiation"></i> Warning', async () => {
         try {
-            await deleteDoc(doc(db, "Archive", data.client.id));
+            await deleteDoc(doc(db, col, data.client.id));
             
             // Remove the element from the DOM
             elm.remove();
