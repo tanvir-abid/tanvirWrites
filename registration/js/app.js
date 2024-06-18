@@ -127,6 +127,24 @@ function createForm(plan) {
     // Create the form element
     const form = document.createElement('form');
 
+    const accessInput = document.createElement('input');
+    accessInput.type = "hidden";
+    accessInput.name = "access_key";
+    accessInput.value = "a147ee20-caf0-4d1a-8584-c38d8231a9fd";
+    form.appendChild(accessInput);
+
+    const subject = document.createElement('input');
+    subject.type = "hidden";
+    subject.name = "subject";
+    subject.value = "New Order";
+    form.appendChild(subject);
+
+    const formName = document.createElement('input');
+    formName.type = "hidden";
+    formName.name = "from_name";
+    formName.value = "TanvirWrites | New Order";
+    form.appendChild(formName);
+
     if(plan){
         // Create the personal container
         const planContainer = document.createElement('div');
@@ -376,6 +394,10 @@ function createForm(plan) {
         const formData = new FormData(form);
         const formObject = Object.fromEntries(formData);
 
+        const object = Object.fromEntries(formData);
+        object.subject = `New Order from ${object.name}`;
+        const json = JSON.stringify(object);
+
         if (checkbox.checked) {
             const currentTimestamp = new Date().toISOString();
             const registrationData = {
@@ -415,14 +437,35 @@ function createForm(plan) {
                 }
             };
             
-            try {
-                const docRef = await addDoc(collection(db, "Projects"), registrationData);
-                createModal('success', true);
-                button.innerHTML = '<i class="fa-solid fa-user-pen"></i> Register';
-            } catch (error) {
-                console.error("Error adding document:", error);
-                button.innerHTML = '<i class="fa-solid fa-user-pen"></i> Register';
-            }
+            
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: json
+            })
+            .then(async (response) => {
+                let json = await response.json();
+                if (response.status == 200) {
+                    try {
+                        const docRef = await addDoc(collection(db, "Projects"), registrationData);
+                        createModal('success', true);
+                        button.innerHTML = '<i class="fa-solid fa-user-pen"></i> Register';
+                    } catch (error) {
+                        console.error("Error adding document:", error);
+                        button.innerHTML = '<i class="fa-solid fa-user-pen"></i> Register';
+                    }
+                } else {
+                    // console.log(response);
+                    createModal('Something went wrong. Please, try again.');
+                }
+            })
+            .catch(error => {
+                // console.log(error);
+                createModal('Something went wrong. Please, try again.');
+            });
               
         } else {
             createModal('Please, agree with the terms and conditions.');
