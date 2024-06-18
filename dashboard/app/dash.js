@@ -910,7 +910,7 @@ function createSummaryContainer(dataArray) {
 //=========================//
 
 function handleArchive(data, elm) {
-    createModal('Are you sure you want to move this project to archive?', async () => {
+    createModal('Are you sure you want to move this project to archive?', '<i class="fa-solid fa-circle-radiation"></i> Warning',async () => {
         try {
             // Set the document in the "Archive" collection
             await setDoc(doc(db, "Archive", data.client.id), data);
@@ -958,7 +958,7 @@ async function displayArchieve(){
 }
 
 async function handleDelete(data, elm) {
-    createModal('Are you sure you want to delete this project ?', async () => {
+    createModal('Are you sure you want to delete this project ?', '<i class="fa-solid fa-circle-radiation"></i> Warning', async () => {
         try {
             await deleteDoc(doc(db, "Archive", data.client.id));
             
@@ -1263,7 +1263,8 @@ function createTable(data) {
         commentCell.setAttribute('data-label', "Comment");
         row.appendChild(commentCell);
         commentCell.addEventListener('click', ()=>{
-            createModal(item.comment,'Comment');
+            // createModal(item.comment,'Comment');
+            createEditingModal('Comment',item)
         });
 
         // Create toggle switch
@@ -1466,6 +1467,91 @@ function createModal(text,header, callback) {
         // Append footer to content container
         modalContent.appendChild(modalFooter);
     }
+
+    // Append content container to modal
+    modal.appendChild(modalContent);
+
+    // Append modal to document body
+    document.body.appendChild(modal);
+
+    // Close modal when clicking outside of the modal content
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    };
+
+    function closeModal() {
+        modal.classList.add('hide');
+        modalContent.classList.add('hide');
+        setTimeout(() => {
+            modal.remove();
+        }, 499);
+    }
+}
+
+function createEditingModal(header,commentObj) {
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'myModal';
+    modal.className = 'modal';
+
+    // Create modal content container
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    // Create modal header
+    const modalHeader = document.createElement('div');
+    modalHeader.className = 'modal-header';
+
+    // Create header text
+    const headerText = document.createElement('p');
+    headerText.innerHTML = `<i class="fa-regular fa-comment-dots"></i> ${header}`;
+    
+    // Create close button
+    const closeButton = document.createElement('span');
+    closeButton.className = 'close';
+    closeButton.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+    closeButton.onclick = function() {
+        closeModal();
+    };
+
+    // Append header text and close button to header
+    modalHeader.appendChild(headerText);
+    modalHeader.appendChild(closeButton);
+
+    // Create modal body
+    const modalBody = document.createElement('div');
+    modalBody.className = 'modal-body editing';
+
+    const bodyText = document.createElement('textarea');
+    bodyText.value = commentObj.comment;  
+    modalBody.appendChild(bodyText);
+
+    const updateBtn = document.createElement('button');
+    updateBtn.innerHTML = "Update"; 
+    modalBody.appendChild(updateBtn);
+    updateBtn.addEventListener('click',async ()=>{
+        updateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
+        let updatedText = bodyText.value;
+        console.log(updatedText);
+        console.log(commentObj);
+        try{
+            const washingtonRef = doc(db, "testimonials", commentObj.id);
+            await updateDoc(washingtonRef, {
+                comment: updatedText
+            });
+            closeModal();
+            setTimeout(() => {
+                createModal('Update Successful','Updated');
+            }, 500);
+        }catch(err){
+            alert(err)
+        }
+    })
+
+    modalContent.appendChild(modalHeader);
+    modalContent.appendChild(modalBody);
 
     // Append content container to modal
     modal.appendChild(modalContent);

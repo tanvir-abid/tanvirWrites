@@ -801,6 +801,10 @@ async function createTestimonySection() {
   prevButton.className = 'prev-button';
   prevButton.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
 
+  const centerButton = document.createElement('button');
+  centerButton.className = 'play-pause-button';
+  centerButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
   const nextButton = document.createElement('button');
   nextButton.className = 'next-button';
   nextButton.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
@@ -809,6 +813,7 @@ async function createTestimonySection() {
   section.appendChild(testimonyContainer);
   section.appendChild(dotContainer);
   section.appendChild(prevButton);
+  section.appendChild(centerButton);
   section.appendChild(nextButton);
 
   // Add event listeners to the buttons
@@ -838,11 +843,17 @@ async function createTestimonySection() {
 
     // Add event listeners to pause and resume the interval on hover
     testimonyContainer.addEventListener('mouseover', () => {
-    clearInterval(testimonialInterval); // Pause the interval on hover
+        clearInterval(testimonialInterval); // Pause the interval on hover
+        centerButton.classList.add('pop');
+        centerButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+        setTimeout(() => {
+            centerButton.classList.remove('pop');
+        }, 500);
     });
 
     testimonyContainer.addEventListener('mouseout', () => {
-    startTestimonialInterval(); // Resume the interval on hover out
+        startTestimonialInterval(); // Resume the interval on hover out
+        centerButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
     });
 
 
