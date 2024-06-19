@@ -220,14 +220,12 @@ async function displayHome(){
         let event = {
             name: project.progress.projectName,
             endDate: project.progress.endDate,
-            completed: project.progress.status.percentage
+            completed: project.progress.status.percentage,
+            client: project.client.clientName
         }
         events.push(event);
       });
     }
-
-    console.log(projects);
-    console.log(events);
 
     const homeContainer = document.createElement('div');
     homeContainer.className = "home-container";
@@ -397,8 +395,9 @@ function createCalendar(events) {
         calendarBody.innerHTML = '';
         monthYear.textContent = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
-        const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const weekdays = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
+        // Add weekday headers
         weekdays.forEach(day => {
             const dayHeader = document.createElement('div');
             dayHeader.className = 'calendar-day-header';
@@ -409,29 +408,34 @@ function createCalendar(events) {
         const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-        let startDay = firstDayOfMonth.getDay();
+        let startDay = firstDayOfMonth.getDay();  // Get the day of the week for the first day
         let date = new Date(firstDayOfMonth);
 
-        date.setDate(date.getDate() - startDay);
+        // Adjust the start day so that it starts on Saturday
+        if (startDay !== 6) {
+            date.setDate(date.getDate() + (6 - startDay)); // Adjust to the nearest Saturday
+        }
 
-        while (date <= lastDayOfMonth || date.getDay() !== 0) {
+        while (date <= lastDayOfMonth) {
             const dayElement = document.createElement('div');
             dayElement.className = 'calendar-day';
             const dateString = date.toDateString();
 
-            dayElement.textContent = date.getDate();
+            // Check if the date belongs to the current month
+            if (date.getMonth() === currentDate.getMonth()) {
+                dayElement.textContent = date.getDate();
 
-            if (date.toDateString() === new Date().toDateString()) {
-                dayElement.classList.add('today');
-            }
+                if (date.toDateString() === new Date().toDateString()) {
+                    dayElement.classList.add('today');
+                }
 
-            if (eventMap.has(dateString)) {
-                const eventsForDate = eventMap.get(dateString);
-                dayElement.classList.add('event');
-                dayElement.addEventListener('click', () => {
-                    console.log(typeof eventsForDate); 
-                    createModal(eventsForDate, "Today's Events");
-                });
+                if (eventMap.has(dateString)) {
+                    const eventsForDate = eventMap.get(dateString);
+                    dayElement.classList.add('event');
+                    dayElement.addEventListener('click', () => {
+                        createModal(eventsForDate, "Today's Events");
+                    });
+                }
             }
 
             calendarBody.appendChild(dayElement);
@@ -453,8 +457,6 @@ function createCalendar(events) {
 
     return calendarContainer;
 }
-
-
 
 //====================================//
 async function displayOrders(){
@@ -859,13 +861,18 @@ async function displayOrders(){
             });
         
             try{
-                const washingtonRef = doc(db, "Projects", data.client.id);
-                // Set the "capital" field of the city 'DC'
-                await updateDoc(washingtonRef, {
+                const planRef = doc(db, "Projects", data.client.id);
+                await updateDoc(planRef, {
                     package: formData
                 });
+                await updateDoc(planRef, {
+                    "budget.due": parseInt(formData.price)
+                });
                 activePlanSubmit.innerHTML = '<i class="fa-solid fa-eraser"></i> Update';
-                createModal('Successfully updated.')
+                createModal('Successfully updated.');
+
+                let budgetInput = budgetForm.querySelector('.due-group input');
+                budgetInput.value = formData.price;
             }
             catch(err){
                 console.log(err);
@@ -1575,19 +1582,18 @@ function createModal(text,header, callback) {
     }
     
     if (Array.isArray(text)) {
-        text.forEach(event => {
-            console.log(event);
+        text.forEach((event, index) => {
             const bodyText = document.createElement('div');
-                    bodyText.className = 'event';
+                bodyText.className = 'event';
             bodyText.innerHTML = `
-                <h3>${event.name}</h3>
+                <h3>${index+1}. ${event.client}</h3>
+                <p><strong>Project:</strong> ${event.name}</p>
                 <p><strong>End Date:</strong> ${formatTimestamp(event.endDate)}</p>
                 <p><strong>Completed:</strong> ${event.completed}%</p>
             `;  
             modalBody.appendChild(bodyText);
         });
     } else {
-        console.log("The provided data is not an array.");
         const bodyText = document.createElement('div');
         bodyText.className = 'text'
         bodyText.innerHTML = text;  // Append body text to body

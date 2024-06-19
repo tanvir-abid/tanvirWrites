@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded',async ()=>{
                     <h3>No Plan Found</h3>
                     <p>The plan you are requesting is no more available.</p>
                     <p>Please go back to the home page and choose a plan to proceed with your registration.</p>
-                    <p class="gotoHome"><a href="../index.html">Go to Home Page</a></p>
+                    <p class="gotoHome"><a href="https://tanvir-abid.github.io/tanvirWrites/">Go to Home Page</a></p>
                 `;
 
                 createModal(warningMessage);
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded',async ()=>{
             <h3>No Plan Selected</h3>
             <p>You have not selected any plan.</p>
             <p>Please go back to the home page and choose a plan to proceed with your registration.</p>
-            <p class="gotoHome"><a href="../index.html">Go to Home Page</a></p>
+            <p class="gotoHome"><a href="https://tanvir-abid.github.io/tanvirWrites/">Go to Home Page</a></p>
         `;
 
         createModal(warningMessage);
@@ -566,6 +566,10 @@ function createSocialMediaContainer() {
 }
 //=============================//
 function createModal(text, status = false) {
+  const existingModal = document.getElementById('myModal');
+  if (existingModal) {
+       existingModal.remove();
+  }
   // Create modal container
   const modal = document.createElement('div');
   modal.id = 'myModal';
