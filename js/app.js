@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     const container = document.querySelector('main');
     const data = await fetchData();
 
-    const navbar = createNavbar(data.services);
+    const navbar = createNavbar(data.services, data.features);
     container.appendChild(navbar);
 
     const main_container = document.createElement('div');
@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     container.appendChild(main_container);
 
     createHomeSection();
-    // createTestimonySection();
 
     if(window.innerWidth <= 768){
         main_container.addEventListener('click', () => {
@@ -103,7 +102,7 @@ function createSlider() {
 }
 
 //===================//
-function createNavbar(data) {
+function createNavbar(data, features) {
     const menuData = [
         {icon: '<i class="fa-solid fa-home"></i>', text: "Home"},
         {icon: '<i class="fa-solid fa-book-open-reader"></i>', text: "Thesis Writing"},
@@ -162,7 +161,7 @@ function createNavbar(data) {
                 if(item.text === 'Home'){
                     createHomeSection();
                }else if(item.text === 'Contact'){
-                    createContactSection();
+                    createContactSection(features);
                }else if(item.text === 'Testimonials'){
                     createTestimonySection();
                }else{
@@ -470,15 +469,19 @@ function createPlanDiv(plan, serviceName) {
     return planDiv;
 }
 
-function createContactSection() {
+function createContactSection(features) {
     // Create the contact-section
     const contactSection = document.createElement('section');
     contactSection.classList.add('contact-section','section');
 
+    const contactDetailsContainer = document.createElement('div');
+    contactDetailsContainer.classList.add('contact-details-container');
+    contactSection.appendChild(contactDetailsContainer);
+
     const head1 = document.createElement('div');
     head1.classList.add('head');
     head1.innerHTML = `Contact`;
-    contactSection.appendChild(head1);
+    contactDetailsContainer.appendChild(head1);
     
     // Create the contacts-container
     const contactsContainer = document.createElement('div');
@@ -488,6 +491,14 @@ function createContactSection() {
     const contactInfoContainer = document.createElement('div');
     contactInfoContainer.classList.add('contact-info-container');
 
+    const contactInfoHeader = document.createElement('h3')
+    contactInfoHeader.className = "contact-header";
+    contactInfoContainer.appendChild(contactInfoHeader);
+    contactInfoHeader.innerHTML = `
+        <h2>Contact Details</h2>
+        <p>Feel free to contact us.</p>
+    `;
+
     // Create the contact-info div
     const contactInfo = document.createElement('div');
     contactInfo.classList.add('contact-info');
@@ -496,7 +507,7 @@ function createContactSection() {
     // Adding contact details
     // Adding contact details
     const contactDetails = [
-        { label: 'Phone:', values: ['+8801521200315', '+8801854702384'], icon: '<i class="fa-solid fa-signal"></i>' },
+        { label: 'Phone:', values: ['+8801854702384','+8801521200315'], icon: '<i class="fa-solid fa-signal"></i>' },
         { label: 'Email:', value: 'tanvir.writes.content@gmail.com', icon: '<i class="fa-solid fa-at"></i>'},
         { label: 'Address:', value: 'Dhaka, Bangladesh', icon: '<i class="fa-solid fa-map-location-dot"></i>' }
     ];
@@ -534,6 +545,15 @@ function createContactSection() {
     // Create the contact-form-container
     const contactFormContainer = document.createElement('div');
     contactFormContainer.classList.add('contact-form-container');
+
+    const contactFormHeader = document.createElement('h3');
+    contactFormHeader.className = "contact-header";
+    contactFormContainer.appendChild(contactFormHeader);
+    contactFormHeader.innerHTML = `
+        <h2>Let's Build Together</h2>
+        <p>Have a unique project in mind? Reach out to discuss your custom requirements.</p>
+    `;
+    
     
     // Creating the contact form
     const contactForm = createContactForm(); // Assuming the createContactForm function is defined
@@ -545,12 +565,120 @@ function createContactSection() {
     contactsContainer.appendChild(contactFormContainer);
 
     // Append the contacts-container to the contact section
-    contactSection.appendChild(contactsContainer);
+    contactDetailsContainer.appendChild(contactsContainer);
+    //---------------------------------------------------//
+    const faqDetailsContainer = document.createElement('div');
+    faqDetailsContainer.className = "faq-details-container";
+    setTimeout(() => {
+        contactSection.appendChild(faqDetailsContainer);
+    }, 700);
+
+    const faqToggle = document.createElement('span');
+    faqToggle.className = 'faq-toggle';
+    faqToggle.innerHTML = 'FAQ';
+    faqDetailsContainer.appendChild(faqToggle);
+
+    const faqAccordion = createFaqAccordion(features);
+
+    faqToggle.addEventListener('click', () => {
+        faqDetailsContainer.classList.toggle('show');
+        faqToggle.classList.toggle('move');
+
+    
+        if (faqDetailsContainer.classList.contains('show')) {
+            setTimeout(() => {
+                faqToggle.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                faqDetailsContainer.appendChild(faqAccordion);
+            }, 100);
+        } else {
+            setTimeout(() => {
+                faqToggle.innerHTML = 'FAQ';
+            }, 100);
+            setTimeout(() => {
+                faqDetailsContainer.removeChild(faqAccordion);
+            }, 600);
+        }
+    });
+    
 
     const main_container = document.getElementById('main-container');
     main_container.innerHTML = "";
     main_container.appendChild(contactSection);
 }
+
+function createFaqAccordion(data) {
+    const accordion_container = document.createElement('div');
+    accordion_container.className = 'accordion-container';
+
+    // Create two columns
+    const column1 = document.createElement('div');
+    column1.className = 'accordion-column';
+    const column2 = document.createElement('div');
+    column2.className = 'accordion-column';
+
+    data.forEach((item, index) => {
+        // Create the accordion-item div
+        const accordionItem = document.createElement('div');
+        accordionItem.classList.add('accordion-item');
+        
+        // Create the header for the accordion
+        const header = document.createElement('div');
+        header.classList.add('accordion-header');
+        
+        // Create the feature text and append it to the header
+        const featureText = document.createElement('span');
+        featureText.textContent = item.feature;
+        header.appendChild(featureText);
+
+        // Create the down arrow span and append it to the header
+        const downArrow = document.createElement('span');
+        downArrow.classList.add('down-arrow');
+        downArrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>'; 
+        header.appendChild(downArrow);
+
+        // Create the content for the accordion
+        const content = document.createElement('div');
+        content.classList.add('accordion-content');
+        item.description.forEach((desc, index) => {
+            const p = document.createElement('p');
+            p.textContent = `${index + 1}. ${desc}`;
+            content.appendChild(p);
+        });
+
+        // Add event listener to header to toggle accordion content and show class
+        header.addEventListener('click', () => {
+            const isActive = content.classList.contains('active');
+            document.querySelectorAll('.accordion-content').forEach((content) => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.accordion-header').forEach((header) => {
+                header.classList.remove('show');
+            });
+            if (!isActive) {
+                content.classList.add('active');
+                header.classList.add('show');
+            }
+        });
+
+        // Append header and content to accordion item
+        accordionItem.appendChild(header);
+        accordionItem.appendChild(content);
+
+        // Append accordion item to the appropriate column
+        if (index % 2 === 0) {
+            column2.appendChild(accordionItem);
+        } else {
+            column1.appendChild(accordionItem);
+        }
+    });
+
+    // Append the two columns to the accordion container
+    accordion_container.appendChild(column1);
+    accordion_container.appendChild(column2);
+
+    return accordion_container;
+}
+
 
 function createContactForm(selectedPlan) {
     // Create the form element
