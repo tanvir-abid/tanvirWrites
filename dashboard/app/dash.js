@@ -207,20 +207,54 @@ async function displayHome(){
     mainContainer.innerHTML = "";
 
     let projects = [];
-
+    const events = [];
     const querySnapshot = await getDocs(collection(db, "Projects"));
     if (querySnapshot.empty) {
         let warning = createWarningContainer('No project is active now.');
         mainContainer.appendChild(warning);
-        alert("No documents found in the 'cities' collection!");
     } else {
       querySnapshot.forEach((doc) => {
-        projects.push(doc.data());
+        let project = doc.data();
+        projects.push(project);
+
+        let event = {
+            name: project.progress.projectName,
+            endDate: project.progress.endDate,
+            completed: project.progress.status.percentage
+        }
+        events.push(event);
       });
     }
 
+    console.log(projects);
+    console.log(events);
+
     const homeContainer = document.createElement('div');
     homeContainer.className = "home-container";
+
+    const sectionHeader = document.createElement('div');
+    sectionHeader.className = 'section-header';
+
+    const headerInfoContainer = document.createElement('div');
+    headerInfoContainer.className = 'header-info-container';
+
+    const h1 = document.createElement('h1');
+    h1.textContent = 'Welcome to Dashboard';
+    headerInfoContainer.appendChild(h1);
+
+    const p = document.createElement('p');
+    p.textContent = 'Your daily overview at a glance.';
+    headerInfoContainer.appendChild(p);
+
+    sectionHeader.appendChild(headerInfoContainer);
+    let calendar = createCalendar(events);
+    sectionHeader.appendChild(calendar);
+
+    homeContainer.appendChild(sectionHeader);
+    //----------------------//
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'cards-container';
+    homeContainer.appendChild(cardsContainer);
 
     const gradients = [
         "linear-gradient(to top, rgba(0, 128, 255, 0.3), rgba(224, 255, 255, 0.3))", // Soft Blue to Light Cyan
@@ -233,7 +267,7 @@ async function displayHome(){
     
     projects.forEach(project => {
         let clientCard = createCard(project, gradients[currentIndex]);
-        homeContainer.appendChild(clientCard);
+        cardsContainer.appendChild(clientCard);
         // Increment the index and wrap around if necessary
         currentIndex = (currentIndex + 1) % gradients.length;
     });    
@@ -316,6 +350,111 @@ function createCard(data, gradient) {
 
     return card;
 }
+
+function groupEventsByEndDate(events) {
+    const eventMap = new Map();
+
+    events.forEach(event => {
+        const endDate = new Date(event.endDate).toDateString();
+        if (!eventMap.has(endDate)) {
+            eventMap.set(endDate, []);
+        }
+        eventMap.get(endDate).push(event);
+    });
+
+    return eventMap;
+}
+
+function createCalendar(events) {
+    const eventMap = groupEventsByEndDate(events);
+
+    const calendarContainer = document.createElement('div');
+    calendarContainer.className = 'calendar-container';
+
+    const calendarHeader = document.createElement('div');
+    calendarHeader.className = 'calendar-header';
+
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+
+    const monthYear = document.createElement('p');
+
+    calendarHeader.appendChild(prevButton);
+    calendarHeader.appendChild(monthYear);
+    calendarHeader.appendChild(nextButton);
+    calendarContainer.appendChild(calendarHeader);
+
+    const calendarBody = document.createElement('div');
+    calendarBody.className = 'calendar-body';
+    calendarContainer.appendChild(calendarBody);
+
+    let currentDate = new Date();
+
+    function renderCalendar() {
+        calendarBody.innerHTML = '';
+        monthYear.textContent = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+        const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        weekdays.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'calendar-day-header';
+            dayHeader.textContent = day;
+            calendarBody.appendChild(dayHeader);
+        });
+
+        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+        let startDay = firstDayOfMonth.getDay();
+        let date = new Date(firstDayOfMonth);
+
+        date.setDate(date.getDate() - startDay);
+
+        while (date <= lastDayOfMonth || date.getDay() !== 0) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            const dateString = date.toDateString();
+
+            dayElement.textContent = date.getDate();
+
+            if (date.toDateString() === new Date().toDateString()) {
+                dayElement.classList.add('today');
+            }
+
+            if (eventMap.has(dateString)) {
+                const eventsForDate = eventMap.get(dateString);
+                dayElement.classList.add('event');
+                dayElement.addEventListener('click', () => {
+                    console.log(typeof eventsForDate); 
+                    createModal(eventsForDate, "Today's Events");
+                });
+            }
+
+            calendarBody.appendChild(dayElement);
+            date.setDate(date.getDate() + 1);
+        }
+    }
+
+    prevButton.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+    });
+
+    nextButton.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+    });
+
+    renderCalendar();
+
+    return calendarContainer;
+}
+
+
 
 //====================================//
 async function displayOrders(){
@@ -407,7 +546,7 @@ async function displayOrders(){
         progressContainer.setAttribute('data-title', 'Progress Status');
     
         const progressForm = document.createElement('form');
-        const progressProperties = ['projectName', 'startDate', 'status.statusTitle', 'status.timestamp', 'status.percentage'];
+        const progressProperties = ['projectName', 'endDate', 'status.statusTitle', 'status.timestamp', 'status.percentage'];
     
         progressProperties.forEach(property => {
             const formGroup = document.createElement('div');
@@ -901,14 +1040,13 @@ function createSummaryContainer(dataArray) {
 
     // Create and append each summary div
     summaryContainer.appendChild(createSummaryDiv('Total Running Projects: ', totalRunningProjects));
-    summaryContainer.appendChild(createSummaryDiv('Total Budget: $', totalBudget));
-    summaryContainer.appendChild(createSummaryDiv('Total Paid: $', totalPaid));
+    summaryContainer.appendChild(createSummaryDiv('Total Budget: ৳ ', totalBudget));
+    summaryContainer.appendChild(createSummaryDiv('Total Paid: ৳ ', totalPaid));
 
     return summaryContainer;
 }
 
 //=========================//
-
 function handleArchive(data, elm) {
     createModal('Are you sure you want to move this project to archive?', '<i class="fa-solid fa-circle-radiation"></i> Warning',async () => {
         try {
@@ -927,8 +1065,6 @@ function handleArchive(data, elm) {
         }
     });
 }
-
-
 //=====================================//
 async function displayArchieve(){
     showLoadingSpinner();
@@ -1438,9 +1574,26 @@ function createModal(text,header, callback) {
         headerText.innerHTML = '<i class="fa-solid fa-circle-radiation"></i> Warning';
     }
     
-    const bodyText = document.createElement('div');
-    bodyText.innerHTML = text;  // Append body text to body
-    modalBody.appendChild(bodyText);
+    if (Array.isArray(text)) {
+        text.forEach(event => {
+            console.log(event);
+            const bodyText = document.createElement('div');
+                    bodyText.className = 'event';
+            bodyText.innerHTML = `
+                <h3>${event.name}</h3>
+                <p><strong>End Date:</strong> ${formatTimestamp(event.endDate)}</p>
+                <p><strong>Completed:</strong> ${event.completed}%</p>
+            `;  
+            modalBody.appendChild(bodyText);
+        });
+    } else {
+        console.log("The provided data is not an array.");
+        const bodyText = document.createElement('div');
+        bodyText.className = 'text'
+        bodyText.innerHTML = text;  // Append body text to body
+        modalBody.appendChild(bodyText);
+    }
+    
 
     // Append header and body to content container
     modalContent.appendChild(modalHeader);

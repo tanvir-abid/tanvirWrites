@@ -54,6 +54,18 @@ document.addEventListener('DOMContentLoaded',async ()=>{
                 });
             });
 
+            if(matchingPackage === null){
+                const warningMessage = `
+                    <h3>No Plan Found</h3>
+                    <p>The plan you are requesting is no more available.</p>
+                    <p>Please go back to the home page and choose a plan to proceed with your registration.</p>
+                    <p class="gotoHome"><a href="../index.html">Go to Home Page</a></p>
+                `;
+
+                createModal(warningMessage);
+                return
+            }
+
             const formElement = createForm(matchingPackage);
             main_container.appendChild(formElement);
         } catch (error) {
@@ -411,7 +423,7 @@ function createForm(plan) {
                 },
                 progress: {
                     projectName: formObject.projectTitle,
-                    startDate: formObject.defenseDate,
+                    endDate: formObject.defenseDate,
                     status: {
                         statusTitle: "Not started",
                         timestamp: currentTimestamp,

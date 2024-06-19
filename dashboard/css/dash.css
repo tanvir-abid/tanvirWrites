@@ -241,7 +241,120 @@ form button:hover {
     background-color: transparent;
 }
 /*=======================*/
-.home-container{
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.calendar-container {
+    width: auto;
+    font-size: 10px;
+    padding: 5px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-header p {
+    margin: 0;
+    font-size: 1em;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.calendar-header button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 3px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+.calendar-header button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0px;
+}
+
+.calendar-body > div{
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.calendar-body > div:first-child{
+    border-left: 1px solid #ddd;
+}
+
+.calendar-body > div:nth-child(7n+1) {
+    border-left: 1px solid #ddd;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-top: 1px solid #ddd;
+}
+
+.calendar-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.3s ease;
+}
+
+.calendar-day:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-day.today {
+    background: #029524;
+}
+
+.calendar-day.event {
+    background: #ff1a1a;
+}
+
+@media screen and (max-width: 768px) {
+    .section-header{
+        padding: 10px;
+        flex-direction: column;
+    }
+
+    .header-info-container{
+        margin-bottom: 10px;
+    }
+
+    .header-info-container h1{
+        font-size: 30px;
+    }
+
+    .calendar-container{
+        width: 100%;
+    }
+}
+
+/* home section's card container style */
+.home-container .cards-container{
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
@@ -278,6 +391,11 @@ form button:hover {
     box-shadow: 0px -3px 23px -4px rgba(0,0,0,0.3);
 }
 
+.card .client h2{
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
 .card p {
     margin: 5px 0;
     color: #fff;
@@ -296,7 +414,7 @@ form button:hover {
 }
 
 @media screen and (max-width: 768px) {
-    .home-container{
+    .home-container .cards-container{
         grid-template-columns: 1fr;
     }
 }
@@ -769,6 +887,15 @@ div#warning-container {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
+.modal-body .event{
+    text-align: left;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 5px;
+    backdrop-filter: blur(10px);
+}
+
 /* Fade-in animation for modal */
 @keyframes fadeIn {
     from {
@@ -847,6 +974,11 @@ div#warning-container {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
+@media screen and (max-width: 768px) {
+    .modal-content{
+        width: 90%;
+    }
+}
 /*=================*/
 .testimonial-container{
     margin-top: 10px;
@@ -913,6 +1045,6 @@ table td[data-label="Action"] {
 
 @media screen and (max-width: 768px) {
     table td[data-label="Comment"] {
-        max-width: 353px;
+        max-width: 327px;
     }
 }
