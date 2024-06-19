@@ -375,10 +375,10 @@ function createCalendar(events) {
     calendarHeader.className = 'calendar-header';
 
     const prevButton = document.createElement('button');
-    prevButton.textContent = 'Previous';
+    prevButton.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
 
     const nextButton = document.createElement('button');
-    nextButton.textContent = 'Next';
+    nextButton.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
 
     const monthYear = document.createElement('p');
 
