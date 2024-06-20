@@ -365,7 +365,7 @@ function createSocialMediaContainer() {
         {
           "icon": '<i class="fa-brands fa-upwork"></i>',
           "name": "Upwork",
-          "url": "https://www.instagram.com/yourprofile"
+          "url": "https://www.upwork.com/freelancers/~01eed48e0b0dbcd41b"
         }
     ];
 
