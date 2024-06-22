@@ -125,13 +125,10 @@ form {
     padding: 0 15px;
 }
 
-.column:first-child{
-    border: none;
-}
-
 .plan-container{
     color: #fff;
     text-align: left;
+    border: none;
 }
 
 .column h2{
