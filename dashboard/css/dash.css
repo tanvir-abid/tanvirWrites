@@ -110,7 +110,6 @@ ul#menu-list {
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 10px;
-    width: 100%;
     background-color: rgba(255, 255, 255, 0.2);
     padding: 5px 8px;
     backdrop-filter: blur(10px);
@@ -246,6 +245,7 @@ form button:hover {
     background-color: transparent;
 }
 /*=======================*/
+.overview-container,
 .section-header {
     display: flex;
     align-items: center;
@@ -253,9 +253,21 @@ form button:hover {
     background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    padding-left: 20px;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+}
+
+.overview-container{
+    gap: 20px;
+    padding: 10px;
     margin-bottom: 20px;
-    border-radius: 8px;
+    border-radius: 0 0 8px 8px;
+    border-top: none;
+}
+
+.overview-container .payment-table,
+.overview-container .calendar-container{
+    flex: 1;
 }
 
 .calendar-container {
@@ -273,7 +285,7 @@ form button:hover {
 
 .calendar-header p {
     margin: 0;
-    font-size: 1em;
+    font-size: 1.8em;
     font-weight: bold;
     color: #ffffff;
 }
@@ -360,8 +372,13 @@ form button:hover {
         font-size: 30px;
     }
 
+    .payment-table,
     .calendar-container{
         width: 100%;
+    }
+
+    .overview-container{
+        flex-direction: column-reverse;
     }
 }
 
@@ -562,6 +579,61 @@ form button:hover {
     backdrop-filter: blur(10px);
   }
 
+}
+
+.payment-table {
+    border-collapse: separate;
+    font-size: 10px;
+    text-align: center;
+    border: none;
+    overflow: auto;
+    height: 100px;
+    border-radius: 5px;
+    border-spacing: 0;
+}
+
+.payment-table thead {
+    background: rgba(255, 255, 255, 0.2); 
+}
+
+.payment-table th, .payment-table td {
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.payment-table th {
+    font-weight: bold;
+    color: #fff; /* White text for headers */
+}
+
+.payment-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.payment-table thead th:last-child,
+.payment-table tbody td:last-child {
+    background-color: rgb(255, 32, 78);
+}
+
+/* Adding specific radius to the corners */
+.payment-table thead th:first-child {
+    border-top-left-radius: 5px;
+}
+
+.payment-table thead th:last-child {
+    border-top-right-radius: 5px;
+}
+
+.payment-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+.payment-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 5px;
+}
+
+.total-row{
+    font-weight: bold;
 }
 /*============================*/
 .coupons-container {

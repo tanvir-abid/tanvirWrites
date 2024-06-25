@@ -615,6 +615,7 @@ function createModal(text, status = false) {
         <p>Your information has been successfully recorded.</p>
         <p>We look forward to providing you with excellent service and support.</p>
         <p>If you have any questions or need further assistance, please feel free to contact us.</p>
+        <p class="gotoHome"><a href="https://tanvir-abid.github.io/tanvirWrites/">Go to Home Page</a></p>
     `;
 
   } else {

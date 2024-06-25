@@ -208,6 +208,7 @@ async function displayHome(){
 
     let projects = [];
     const events = [];
+    const payments = [];
     const querySnapshot = await getDocs(collection(db, "Projects"));
     if (querySnapshot.empty) {
         let warning = createWarningContainer('No project is active now.');
@@ -223,7 +224,14 @@ async function displayHome(){
             completed: project.progress.status.percentage,
             client: project.client.clientName
         }
+
+        let payment = {
+            client : project.client.clientName,
+            budget: project.budget.due,
+            paid: project.budget.paid,
+        }
         events.push(event);
+        payments.push(payment);
       });
     }
 
@@ -245,10 +253,16 @@ async function displayHome(){
     headerInfoContainer.appendChild(p);
 
     sectionHeader.appendChild(headerInfoContainer);
-    let calendar = createCalendar(events);
-    sectionHeader.appendChild(calendar);
-
     homeContainer.appendChild(sectionHeader);
+    //--------------------------------------//
+    const overviewContainer = document.createElement('div');
+    overviewContainer.className = 'overview-container';
+
+    overviewContainer.appendChild(createPaymentTable(payments));
+    overviewContainer.appendChild(createCalendar(events));
+
+    homeContainer.appendChild(overviewContainer);
+
     //----------------------//
     const cardsContainer = document.createElement('div');
     cardsContainer.className = 'cards-container';
@@ -457,6 +471,88 @@ function createCalendar(events) {
 
     return calendarContainer;
 }
+
+function createPaymentTable(payments) {
+    // Create the table element
+    const table = document.createElement('table');
+    table.className = 'payment-table'; // Add the class here
+
+    // Create the table header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    const headers = ['Clients', 'Budget (TK.)', 'Paid (TK.)', 'Remain (TK.)'];
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create the table body
+    const tbody = document.createElement('tbody');
+
+    let totalBudget = 0;
+    let totalPaid = 0;
+    let totalRemain = 0;
+
+    payments.forEach(payment => {
+        const row = document.createElement('tr');
+
+        const clientCell = document.createElement('td');
+        clientCell.textContent = payment.client;
+        row.appendChild(clientCell);
+
+        const budgetCell = document.createElement('td');
+        budgetCell.textContent = '৳ '+payment.budget;
+        row.appendChild(budgetCell);
+
+        const paidCell = document.createElement('td');
+        paidCell.textContent = '৳ '+payment.paid;
+        row.appendChild(paidCell);
+
+        const remainCell = document.createElement('td');
+        const remainValue = payment.budget - payment.paid;
+        remainCell.textContent = '৳ '+remainValue;
+        row.appendChild(remainCell);
+
+        totalBudget += payment.budget;
+        totalPaid += payment.paid;
+        totalRemain += remainValue;
+
+        tbody.appendChild(row);
+    });
+
+    // Append the totals row
+    const totalsRow = document.createElement('tr');
+    totalsRow.className = 'total-row';
+
+    const totalClientCell = document.createElement('td');
+    totalClientCell.textContent = 'Total';
+    totalsRow.appendChild(totalClientCell);
+
+    const totalBudgetCell = document.createElement('td');
+    totalBudgetCell.textContent = '৳ '+totalBudget;
+    totalsRow.appendChild(totalBudgetCell);
+
+    const totalPaidCell = document.createElement('td');
+    totalPaidCell.textContent = '৳ '+totalPaid;
+    totalsRow.appendChild(totalPaidCell);
+
+    const totalRemainCell = document.createElement('td');
+    totalRemainCell.textContent = '৳ '+totalRemain;
+    totalsRow.appendChild(totalRemainCell);
+
+    tbody.appendChild(totalsRow);
+
+    table.appendChild(tbody);
+
+    // Return the table element
+    return table;
+}
+
 
 //====================================//
 async function displayOrders(){
