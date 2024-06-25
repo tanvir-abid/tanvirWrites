@@ -408,7 +408,9 @@ function createForm(plan) {
 
         const object = Object.fromEntries(formData);
         object.subject = `New Order from ${object.name}`;
-        const json = JSON.stringify(object);
+
+        const mergedData = { ...object, ...plan };
+        const json = JSON.stringify(mergedData);
 
         if (checkbox.checked) {
             const currentTimestamp = new Date().toISOString();
