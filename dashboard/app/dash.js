@@ -557,24 +557,37 @@ async function displayOrders(){
             label.textContent = property.split('.').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     
             if (property === 'status.statusTitle') {
-                const select = document.createElement('select');
-                select.name = property;
-                const options = ['Not Started (0%)', 'Initiated (25%)', 'Half Done (50%)', 'One-third Done (75%)', 'Completed (100%)'];
-                options.forEach(option => {
-                    const opt = document.createElement('option');
-                    opt.value = option.toLowerCase();
-                    opt.textContent = option;
-                    if (option.toLowerCase() === data.progress.status.statusTitle.trim()) {
-                        opt.selected = true;
+                formGroup.classList.add('edit-group');
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = property;
+                input.value = data.progress.status.statusTitle.trim();
+                input.disabled = true;
+
+                const editButton = document.createElement('button');
+                editButton.type = 'button';
+                editButton.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>';
+                editButton.className = 'edit-button';
+
+                let isEditable = false; // Flag to track input state
+
+                editButton.addEventListener('click', () => {
+                    isEditable = !isEditable; // Toggle the flag
+                    input.disabled = !isEditable; // Enable or disable the input based on the flag
+                    if (isEditable) {
+                        input.focus();
                     }
-                    select.appendChild(opt);
                 });
+
                 formGroup.appendChild(label);
-                formGroup.appendChild(select);
+                formGroup.appendChild(input);
+                formGroup.appendChild(editButton);
+
+
             } else if (property === 'status.percentage') {
                 const select = document.createElement('select');
                 select.name = property;
-                const options = [0, 25, 50, 75, 100];
+                const options = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
                 options.forEach(option => {
                     const opt = document.createElement('option');
                     opt.value = option;
@@ -663,7 +676,7 @@ async function displayOrders(){
             formGroup.appendChild(input);
 
             if (property === 'due') {
-                formGroup.classList.add('due-group');
+                formGroup.classList.add('edit-group');
                 label.textContent = 'Budget';
                 if(isNaN(data.budget[property])){
                     input.value = 0;
@@ -677,10 +690,14 @@ async function displayOrders(){
                 editButton.type = 'button';
                 editButton.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>';
                 editButton.className = 'edit-button';
+                let isEditable = false; // Flag to track input state
+
                 editButton.addEventListener('click', () => {
-                    input.disabled = false;
-                    input.focus();
-                    editButton.disabled = true;
+                    isEditable = !isEditable; // Toggle the flag
+                    input.disabled = !isEditable; // Enable or disable the input based on the flag
+                    if (isEditable) {
+                        input.focus();
+                    }
                 });
 
                 formGroup.appendChild(editButton);

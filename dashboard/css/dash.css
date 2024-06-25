@@ -233,11 +233,11 @@ form button:hover {
     background: rgb(255, 32, 78, 0.9);
 }
 
-.due-group{
+.edit-group{
     position: relative;
 }
 
-.due-group button{
+.edit-group button{
     position: absolute;
     right: 0;
     top: 10px;
